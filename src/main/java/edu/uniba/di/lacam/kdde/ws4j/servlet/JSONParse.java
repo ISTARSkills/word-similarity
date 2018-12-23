@@ -7,10 +7,6 @@
 
 package edu.uniba.di.lacam.kdde.ws4j.servlet;
 
-import java.util.List;
-import java.util.Map;
-
-import com.json.parsers.JSONParser;
 import com.json.parsers.JsonParserFactory;
 
 /**
@@ -32,14 +28,13 @@ public class JSONParse {
      */
     public String[] parseWords(String in) {
         JsonParserFactory factory=JsonParserFactory.getInstance();
-        JSONParser parser=factory.newJsonParser();
-        Map jsonData=parser.parseJson(in);
-        List al= (List) jsonData.get("root");
-        String[] results = new String[al.size()];
-        for (int i = 0; i < al.size(); i++) {
-            results[i] = (String) ((Map)al.get(i)).get("word");
-        }
-        return results;
+		/*
+		 * JSONParser parser=factory.newJsonParser(); Map jsonData=parser.parseJson(in);
+		 * List al= (List) jsonData.get("root"); String[] results = new
+		 * String[al.size()]; for (int i = 0; i < al.size(); i++) { results[i] =
+		 * (String) ((Map)al.get(i)).get("word"); }
+		 */
+        return null;
     }
 
     /**
@@ -48,14 +43,13 @@ public class JSONParse {
      * @return An array of the scores.
      */
     public int[] parseScores(String in) {
-        JsonParserFactory factory=JsonParserFactory.getInstance();
-        JSONParser parser=factory.newJsonParser();
-        Map jsonData=parser.parseJson(in);
-        List al= (List) jsonData.get("root");
-        int[] results = new int[al.size()];
-        for (int i = 0; i < al.size(); i++) {
-            results[i] = Integer.parseInt((String) ((Map) al.get(i)).get("score"));
-        }
-        return results;
+		/*
+		 * JsonParserFactory factory=JsonParserFactory.getInstance(); JSONParser
+		 * parser=factory.newJsonParser(); Map jsonData=parser.parseJson(in); List al=
+		 * (List) jsonData.get("root"); int[] results = new int[al.size()]; for (int i =
+		 * 0; i < al.size(); i++) { results[i] = Integer.parseInt((String) ((Map)
+		 * al.get(i)).get("score")); }
+		 */
+        return null;
     }
 }
