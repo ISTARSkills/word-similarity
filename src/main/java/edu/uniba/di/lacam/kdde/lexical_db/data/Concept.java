@@ -1,6 +1,7 @@
 package edu.uniba.di.lacam.kdde.lexical_db.data;
 
 import com.google.common.base.Objects;
+
 import edu.uniba.di.lacam.kdde.lexical_db.item.POS;
 
 public class Concept {

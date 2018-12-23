@@ -1,14 +1,14 @@
 package edu.uniba.di.lacam.kdde.ws4j.util;
 
-import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
-import edu.uniba.di.lacam.kdde.lexical_db.item.POS;
-import edu.uniba.di.lacam.kdde.ws4j.Relatedness;
-import edu.uniba.di.lacam.kdde.ws4j.RelatednessCalculator;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
+import edu.uniba.di.lacam.kdde.lexical_db.item.POS;
+import edu.uniba.di.lacam.kdde.ws4j.Relatedness;
+import edu.uniba.di.lacam.kdde.ws4j.RelatednessCalculator;
 
 public class WordSimilarityCalculator {
 

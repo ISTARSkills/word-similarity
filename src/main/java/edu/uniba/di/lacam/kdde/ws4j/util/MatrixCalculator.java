@@ -1,10 +1,14 @@
 package edu.uniba.di.lacam.kdde.ws4j.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import edu.uniba.di.lacam.kdde.lexical_db.ILexicalDatabase;
 import edu.uniba.di.lacam.kdde.lexical_db.item.POS;
 import edu.uniba.di.lacam.kdde.ws4j.RelatednessCalculator;
-
-import java.util.*;
 
 public class MatrixCalculator {
 

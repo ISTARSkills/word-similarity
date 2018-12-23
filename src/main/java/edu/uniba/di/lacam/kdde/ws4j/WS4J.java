@@ -2,7 +2,14 @@
 
 import edu.uniba.di.lacam.kdde.lexical_db.ILexicalDatabase;
 import edu.uniba.di.lacam.kdde.lexical_db.MITWordNet;
-import edu.uniba.di.lacam.kdde.ws4j.similarity.*;
+import edu.uniba.di.lacam.kdde.ws4j.similarity.HirstStOnge;
+import edu.uniba.di.lacam.kdde.ws4j.similarity.JiangConrath;
+import edu.uniba.di.lacam.kdde.ws4j.similarity.LeacockChodorow;
+import edu.uniba.di.lacam.kdde.ws4j.similarity.Lesk;
+import edu.uniba.di.lacam.kdde.ws4j.similarity.Lin;
+import edu.uniba.di.lacam.kdde.ws4j.similarity.Path;
+import edu.uniba.di.lacam.kdde.ws4j.similarity.Resnik;
+import edu.uniba.di.lacam.kdde.ws4j.similarity.WuPalmer;
 import edu.uniba.di.lacam.kdde.ws4j.util.MatrixCalculator;
 
 /**

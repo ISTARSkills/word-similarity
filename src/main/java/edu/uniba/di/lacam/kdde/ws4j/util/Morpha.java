@@ -1,9 +1,9 @@
 package edu.uniba.di.lacam.kdde.ws4j.util;
 
+import java.util.Arrays;
+
 import opennlp.tools.stemmer.PorterStemmer;
 import opennlp.tools.stemmer.Stemmer;
-
-import java.util.Arrays;
 
 public class Morpha {
 

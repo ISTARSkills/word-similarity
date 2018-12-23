@@ -1,16 +1,16 @@
 package edu.uniba.di.lacam.kdde.ws4j.similarity;
 
-import edu.uniba.di.lacam.kdde.lexical_db.ILexicalDatabase;
-import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
-import edu.uniba.di.lacam.kdde.lexical_db.item.POS;
-import edu.uniba.di.lacam.kdde.ws4j.util.DepthFinder;
-import edu.uniba.di.lacam.kdde.ws4j.Relatedness;
-import edu.uniba.di.lacam.kdde.ws4j.RelatednessCalculator;
-import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import edu.uniba.di.lacam.kdde.lexical_db.ILexicalDatabase;
+import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
+import edu.uniba.di.lacam.kdde.lexical_db.item.POS;
+import edu.uniba.di.lacam.kdde.ws4j.Relatedness;
+import edu.uniba.di.lacam.kdde.ws4j.RelatednessCalculator;
+import edu.uniba.di.lacam.kdde.ws4j.util.DepthFinder;
+import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 
 /**
  * This class calculates semantic relatedness of word senses using

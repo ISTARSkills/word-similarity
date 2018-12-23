@@ -1,15 +1,20 @@
 package edu.uniba.di.lacam.kdde.ws4j.util;
 
-import java.util.*;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.HYPERNYM;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
+
 import edu.uniba.di.lacam.kdde.lexical_db.ILexicalDatabase;
 import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
-
-import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.*;
 
 public class PathFinder {
 

@@ -1,25 +1,40 @@
 package edu.uniba.di.lacam.kdde.lexical_db;
 
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.HOLONYM;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.HOLONYM_MEMBER;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.HOLONYM_PART;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.HOLONYM_SUBSTANCE;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.MERONYM;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.MERONYM_MEMBER;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.MERONYM_PART;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.MERONYM_SUBSTANCE;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.SYNSET;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.mit.jwi.IRAMDictionary;
 import edu.mit.jwi.RAMDictionary;
 import edu.mit.jwi.data.ILoadPolicy;
-import edu.mit.jwi.item.*;
+import edu.mit.jwi.item.IIndexWord;
+import edu.mit.jwi.item.ISynsetID;
+import edu.mit.jwi.item.IWord;
+import edu.mit.jwi.item.Pointer;
+import edu.mit.jwi.item.SynsetID;
 import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
 import edu.uniba.di.lacam.kdde.lexical_db.item.Link;
 import edu.uniba.di.lacam.kdde.lexical_db.item.POS;
 import edu.uniba.di.lacam.kdde.ws4j.util.Morpha;
 import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
-
-import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.*;
 
 final public class MITWordNet implements ILexicalDatabase {
 

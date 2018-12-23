@@ -7,8 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import de.tudarmstadt.ukp.jwktl.JWKTL;
@@ -25,7 +22,6 @@ import de.tudarmstadt.ukp.jwktl.api.IWiktionaryEntry;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryPage;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryRelation;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionarySense;
-import de.tudarmstadt.ukp.jwktl.api.PartOfSpeech;
 import de.tudarmstadt.ukp.jwktl.api.RelationType;
 import edu.mit.jwi.IRAMDictionary;
 import edu.mit.jwi.item.IIndexWord;
@@ -36,7 +32,6 @@ import edu.mit.jwi.item.POS;
 import edu.uniba.di.lacam.kdde.lexical_db.ILexicalDatabase;
 import edu.uniba.di.lacam.kdde.lexical_db.MITWordNet;
 import edu.uniba.di.lacam.kdde.ws4j.RelatednessCalculator;
-import edu.uniba.di.lacam.kdde.ws4j.demo.SimilarityCalculationDemo;
 import edu.uniba.di.lacam.kdde.ws4j.similarity.WuPalmer;
 import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 

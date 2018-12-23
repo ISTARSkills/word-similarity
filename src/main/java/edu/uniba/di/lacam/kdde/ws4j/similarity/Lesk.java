@@ -1,16 +1,16 @@
 package edu.uniba.di.lacam.kdde.ws4j.similarity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.uniba.di.lacam.kdde.lexical_db.ILexicalDatabase;
 import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
 import edu.uniba.di.lacam.kdde.lexical_db.item.POS;
+import edu.uniba.di.lacam.kdde.ws4j.Relatedness;
+import edu.uniba.di.lacam.kdde.ws4j.RelatednessCalculator;
 import edu.uniba.di.lacam.kdde.ws4j.util.GlossFinder;
 import edu.uniba.di.lacam.kdde.ws4j.util.OverlapFinder;
 import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
-import edu.uniba.di.lacam.kdde.ws4j.Relatedness;
-import edu.uniba.di.lacam.kdde.ws4j.RelatednessCalculator;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class calculates Lesk similarity score between two synsets through

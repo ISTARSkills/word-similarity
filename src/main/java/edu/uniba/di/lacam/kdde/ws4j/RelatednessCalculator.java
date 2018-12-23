@@ -1,11 +1,14 @@
 package edu.uniba.di.lacam.kdde.ws4j;
 
+import java.util.List;
+
 import edu.uniba.di.lacam.kdde.lexical_db.ILexicalDatabase;
 import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
 import edu.uniba.di.lacam.kdde.lexical_db.item.POS;
-import edu.uniba.di.lacam.kdde.ws4j.util.*;
-
-import java.util.List;
+import edu.uniba.di.lacam.kdde.ws4j.util.DepthFinder;
+import edu.uniba.di.lacam.kdde.ws4j.util.MatrixCalculator;
+import edu.uniba.di.lacam.kdde.ws4j.util.PathFinder;
+import edu.uniba.di.lacam.kdde.ws4j.util.WordSimilarityCalculator;
 
 public abstract class RelatednessCalculator {
 

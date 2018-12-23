@@ -1,14 +1,25 @@
 package edu.uniba.di.lacam.kdde.ws4j.util;
 
-import edu.uniba.di.lacam.kdde.lexical_db.ILexicalDatabase;
-import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
-import edu.uniba.di.lacam.kdde.lexical_db.item.Link;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.ANTONYM;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.ATTRIBUTE;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.CAUSE;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.ENTAILMENT;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.HOLONYM;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.HYPERNYM;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.HYPONYM;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.MERONYM;
+import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.SIMILAR_TO;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import static edu.uniba.di.lacam.kdde.lexical_db.item.Link.*;
+import edu.uniba.di.lacam.kdde.lexical_db.ILexicalDatabase;
+import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
+import edu.uniba.di.lacam.kdde.lexical_db.item.Link;
 
 public class Traverser {
 

@@ -24,6 +24,12 @@
 
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/com.codesnippets4all/quick-json -->
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-corenlp -->
 		<dependency>
@@ -110,12 +116,12 @@
 		</dependency>
 
 
-<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
-<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-collections4</artifactId>
-    <version>4.2</version>
-</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+			<version>4.2</version>
+		</dependency>
 
 
 

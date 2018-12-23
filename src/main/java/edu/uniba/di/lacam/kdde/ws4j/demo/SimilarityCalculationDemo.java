@@ -1,13 +1,5 @@
 package edu.uniba.di.lacam.kdde.ws4j.demo;
 
-import edu.uniba.di.lacam.kdde.lexical_db.ILexicalDatabase;
-import edu.uniba.di.lacam.kdde.lexical_db.MITWordNet;
-import edu.uniba.di.lacam.kdde.ws4j.RelatednessCalculator;
-import edu.uniba.di.lacam.kdde.ws4j.servlet.MatchTypes;
-import edu.uniba.di.lacam.kdde.ws4j.servlet.SimilalrityObject;
-import edu.uniba.di.lacam.kdde.ws4j.similarity.*;
-import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,7 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import de.tudarmstadt.ukp.jwktl.JWKTL;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryEdition;
@@ -24,6 +15,11 @@ import de.tudarmstadt.ukp.jwktl.api.IWiktionaryPage;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryRelation;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionarySense;
 import de.tudarmstadt.ukp.jwktl.api.RelationType;
+import edu.uniba.di.lacam.kdde.lexical_db.ILexicalDatabase;
+import edu.uniba.di.lacam.kdde.lexical_db.MITWordNet;
+import edu.uniba.di.lacam.kdde.ws4j.RelatednessCalculator;
+import edu.uniba.di.lacam.kdde.ws4j.similarity.WuPalmer;
+import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 
 public class SimilarityCalculationDemo {
 

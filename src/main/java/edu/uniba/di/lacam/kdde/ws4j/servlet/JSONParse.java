@@ -7,11 +7,11 @@
 
 package edu.uniba.di.lacam.kdde.ws4j.servlet;
 
-import com.json.parsers.JsonParserFactory;
-import com.json.parsers.JSONParser;
-
 import java.util.List;
 import java.util.Map;
+
+import com.json.parsers.JSONParser;
+import com.json.parsers.JsonParserFactory;
 
 /**
  * A JSON parser for the data returned from Datamuse.

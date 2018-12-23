@@ -1,10 +1,11 @@
 package edu.uniba.di.lacam.kdde.ws4j;
 
-import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
+import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 
 public class Relatedness {
 

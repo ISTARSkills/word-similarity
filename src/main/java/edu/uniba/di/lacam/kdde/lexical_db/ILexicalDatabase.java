@@ -1,10 +1,10 @@
 package edu.uniba.di.lacam.kdde.lexical_db;
 
+import java.util.List;
+
 import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
 import edu.uniba.di.lacam.kdde.lexical_db.item.Link;
 import edu.uniba.di.lacam.kdde.lexical_db.item.POS;
-
-import java.util.List;
 
 public interface ILexicalDatabase {
 
