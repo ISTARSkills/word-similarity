@@ -51,7 +51,7 @@ public class WordSimilarityServlet extends HttpServlet {
 
 	private static RelatednessCalculator[] rcs;
 	private static IRAMDictionary dict = new MITWordNet().getDictionary();
-	private static File wiktionaryDirectory = new File("C:\\Users\\Vaibhav Verma\\Documents\\TARGET_DIRECTORY");
+	private static File wiktionaryDirectory = new File("/var/TARGET_DIRECTORY");
 	private static IWiktionaryEdition wkt = JWKTL.openEdition(wiktionaryDirectory);
 	static {
 		WS4JConfiguration.getInstance().setMemoryDB(false);

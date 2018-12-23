@@ -135,6 +135,12 @@
 		</dependency>
 
 
+<!-- https://mvnrepository.com/artifact/com.codesnippets4all/quick-json -->
+<dependency>
+    <groupId>com.codesnippets4all</groupId>
+    <artifactId>quick-json</artifactId>
+    <version>1.0.4</version>
+</dependency>
 
 
 
