@@ -296,8 +296,12 @@ public class WordSimilarityServlet extends HttpServlet {
 
 			
 			for (String pos : signalMap.keySet()) {
-				if (pos.startsWith("NN") || pos.startsWith("VB")) {
+				if (pos.startsWith("NN") || pos.startsWith("VB") || pos.startsWith(".")) {
+					if(signalMap.get(pos)!=null && convaerSationMap.get(pos)!=null) {
 					isMatch = matchList(signalMap.get(pos), convaerSationMap.get(pos));
+					}else {
+						break;
+					}
 					if (!isMatch) {
 						break;
 					}
