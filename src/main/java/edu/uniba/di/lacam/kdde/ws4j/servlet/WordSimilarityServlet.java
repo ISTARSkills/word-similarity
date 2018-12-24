@@ -250,10 +250,16 @@ public class WordSimilarityServlet extends HttpServlet {
 			value = sentanceSimilarity(signal.trim().toLowerCase(), conversationBlock.trim().toLowerCase());
 			if (value >= 0.90) {
 
-				if (isSignalNegative && isConversationNegative) {
+				if ((isSignalNegative && isConversationNegative) && (signal.contains("?") && conversationBlock.contains("?"))) {
 					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
 							value);
-				} else if (!isSignalNegative && !isConversationNegative) {
+				} else if ((!isSignalNegative && !isConversationNegative) &&  (!signal.contains("?") && !conversationBlock.contains("?"))) {
+					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
+							value);
+				} if ((isSignalNegative && isConversationNegative) && (!signal.contains("?") && !conversationBlock.contains("?"))) {
+					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
+							value);
+				} else if ((!isSignalNegative && !isConversationNegative) &&  (signal.contains("?") && conversationBlock.contains("?"))) {
 					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
 							value);
 				} else {
@@ -283,7 +289,7 @@ public class WordSimilarityServlet extends HttpServlet {
 			MaxentTagger tagger = null;
 			try {
 				tagger = new MaxentTagger(new FileInputStream(new File(
-						"C:\\Users\\Vaibhav Verma\\git\\word-similarity\\src\\main\\resources\\english-left3words-distsim.tagger")));
+						"C:\\Users\\Anurag\\git\\word-similarity\\src\\main\\resources\\english-left3words-distsim.tagger")));
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -294,12 +300,24 @@ public class WordSimilarityServlet extends HttpServlet {
 			HashMap<String, ArrayList<String>> signalMap = generateSentanceMap(tagger, sentences);
 			HashMap<String, ArrayList<String>> convaerSationMap = generateSentanceMap(tagger, conversationSentence);
 
+			HashMap<String, String> tagMap=new HashMap<String, String>();
 			
 			for (String pos : signalMap.keySet()) {
-				if (pos.startsWith("NN") || pos.startsWith("VB") || pos.startsWith(".")) {
+				if (!tagMap.containsKey(pos)) {
+					tagMap.put(pos, pos);
+				}  
+			}
+			for (String pos : convaerSationMap.keySet()) {
+				if (!tagMap.containsKey(pos)) {
+					tagMap.put(pos, pos);
+				}  
+			}
+			for (String pos : tagMap.keySet()) {
+				if (pos.startsWith("NN") || pos.startsWith("VB") || pos.startsWith(".")  ) {
 					if(signalMap.get(pos)!=null && convaerSationMap.get(pos)!=null) {
 					isMatch = matchList(signalMap.get(pos), convaerSationMap.get(pos));
 					}else {
+						isMatch=false;
 						break;
 					}
 					if (!isMatch) {
