@@ -49,7 +49,7 @@ import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 /**
  * Servlet implementation class WordSimilarityServlet
  */
-@WebServlet(value = "/wordsimilarity") 
+@WebServlet(value = "/wordsimilarity")
 public class WordSimilarityServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -123,7 +123,7 @@ public class WordSimilarityServlet extends HttpServlet {
 		 * 
 		 * String[] items = jsp.parseWords(q.findSimilar(signal));
 		 */
-		double value=0d;
+		double value = 0d;
 		if (conversationBlock.equalsIgnoreCase(signal)) {
 			return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.EXACT_MATCH.name(), 1d);
 		}
@@ -206,19 +206,19 @@ public class WordSimilarityServlet extends HttpServlet {
 
 			// wkt.close();
 		} else {
-			boolean isSignalNegative=false;
-			boolean isConversationNegative=false;
+			boolean isSignalNegative = false;
+			boolean isConversationNegative = false;
 			ArrayList<String> alertnateSignals = new ArrayList<>();
 			ArrayList<String> stopWords = getStopWords();
 			ArrayList<String> negativeWords = getNegativeWords();
 			for (String word : negativeWords) {
-				if(signal.contains(word)) {
-					isSignalNegative=true;
+				if (signal.contains(word)) {
+					isSignalNegative = true;
 				}
-				if(conversationBlock.contains(word)) {
-					isConversationNegative=true;
+				if (conversationBlock.contains(word)) {
+					isConversationNegative = true;
 				}
-				
+
 			}
 			String[] words1 = signal.split(" ");
 			String temp = signal;
@@ -234,7 +234,7 @@ public class WordSimilarityServlet extends HttpServlet {
 				}
 			}
 			for (String word : alertnateSignals) {
-				System.out.println("SYNONYM_SENTENCE_ALTERNATE "+word);
+				System.out.println("SYNONYM_SENTENCE_ALTERNATE " + word);
 				if (word.equalsIgnoreCase(conversationBlock)) {
 					return new SimilalrityObject(signal, conversationBlock, true,
 							MatchTypes.SYNONYM_SENTENCE_EXACT.name(), 1d);
@@ -245,29 +245,30 @@ public class WordSimilarityServlet extends HttpServlet {
 							MatchTypes.SYNONYM_SENTENCE_CONTAINS.name(), 1d);
 				}
 			}
-			
 
 			System.out.println("No Entry found in wictionary for " + signal);
-			  value = sentanceSimilarity(signal.trim().toLowerCase(), conversationBlock.trim().toLowerCase());
+			value = sentanceSimilarity(signal.trim().toLowerCase(), conversationBlock.trim().toLowerCase());
 			if (value >= 0.90) {
-				
-				if( isSignalNegative && isConversationNegative) {
-				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
-						value);
-				}else if(!isSignalNegative && !isConversationNegative) {
+
+				if (isSignalNegative && isConversationNegative) {
 					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
 							value);
-				}
-				else {
-					value=(1-value);
+				} else if (!isSignalNegative && !isConversationNegative) {
+					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
+							value);
+				} else {
+					value = (1 - value);
 					if (value >= 0.90) {
-					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
-							value);
+						return new SimilalrityObject(signal, conversationBlock, true,
+								MatchTypes.SENTENCE_SIMILARITY.name(), value);
 					}
 				}
-			}
-			else {
-				stanfordSimilarity(signal,conversationBlock);
+			} else {
+				boolean resstanford = stanfordSimilarity(signal, conversationBlock);
+				if (resstanford) {
+					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
+							1d);
+				}
 			}
 		}
 
@@ -275,35 +276,40 @@ public class WordSimilarityServlet extends HttpServlet {
 
 	}
 
-	private static void stanfordSimilarity(String signal,String conversationBlock) {
+	private static boolean stanfordSimilarity(String signal, String conversationBlock) {
 		// TODO Auto-generated method stub
-		MaxentTagger tagger = null;
+		boolean isMatch = false;
 		try {
-			tagger = new MaxentTagger(new FileInputStream(new File(
-					"C:\\Users\\Vaibhav Verma\\git\\word-similarity\\src\\main\\resources\\english-left3words-distsim.tagger")));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		List<List<HasWord>> sentences = MaxentTagger.tokenizeText(new StringReader(signal));
-		List<List<HasWord>> conversationSentence = MaxentTagger.tokenizeText(new StringReader(conversationBlock));
+			MaxentTagger tagger = null;
+			try {
+				tagger = new MaxentTagger(new FileInputStream(new File(
+						"C:\\Users\\Vaibhav Verma\\git\\word-similarity\\src\\main\\resources\\english-left3words-distsim.tagger")));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			List<List<HasWord>> sentences = MaxentTagger.tokenizeText(new StringReader(signal));
+			List<List<HasWord>> conversationSentence = MaxentTagger.tokenizeText(new StringReader(conversationBlock));
 
-		HashMap<String, ArrayList<String>> signalMap = generateSentanceMap(tagger, sentences);
-		HashMap<String, ArrayList<String>> convaerSationMap = generateSentanceMap(tagger, conversationSentence);
-		
-		 
-		 
-		boolean isMatch=false;
-		for (String pos : signalMap.keySet()) {
-			if (!pos.startsWith("JJ") && !pos.startsWith("DT") && !pos.startsWith(".")) {
-				isMatch=matchList(signalMap.get(pos),convaerSationMap.get(pos));
-				if(!isMatch) {
-					break;
+			HashMap<String, ArrayList<String>> signalMap = generateSentanceMap(tagger, sentences);
+			HashMap<String, ArrayList<String>> convaerSationMap = generateSentanceMap(tagger, conversationSentence);
+
+			
+			for (String pos : signalMap.keySet()) {
+				if (pos.startsWith("NN") || pos.startsWith("VB")) {
+					isMatch = matchList(signalMap.get(pos), convaerSationMap.get(pos));
+					if (!isMatch) {
+						break;
+					}
 				}
 			}
+			System.out.println("isMatch " + isMatch);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		System.out.println("isMatch "+isMatch);
+		return isMatch;
 	}
+
 	private static HashMap<String, ArrayList<String>> generateSentanceMap(MaxentTagger tagger,
 			List<List<HasWord>> sentences) {
 		HashMap<String, ArrayList<String>> sentanceMap = new HashMap<String, ArrayList<String>>();
@@ -329,7 +335,7 @@ public class WordSimilarityServlet extends HttpServlet {
 	private static boolean matchList(ArrayList<String> list1, ArrayList<String> list2) {
 		for (String string : list2) {
 			for (String string2 : list2) {
-				if(!string.equalsIgnoreCase(string2)) {
+				if (!string.equalsIgnoreCase(string2)) {
 					return false;
 				}
 			}
@@ -339,39 +345,39 @@ public class WordSimilarityServlet extends HttpServlet {
 	}
 
 	private static ArrayList<String> getNegativeWords() {
-		//URL resource = Resources.getResource("negative_words.txt");
-		//String csvFile = resource.getFile();   // get file path 
+		// URL resource = Resources.getResource("negative_words.txt");
+		// String csvFile = resource.getFile(); // get file path
 		String csvFile = "/var/negative_words.txt";
-				BufferedReader br = null;
-				String line = "";
-				String cvsSplitBy = ",";
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = ",";
 
-				ArrayList<String> stopWords = new ArrayList<String>();
+		ArrayList<String> stopWords = new ArrayList<String>();
 
+		try {
+			br = new BufferedReader(new FileReader(csvFile));
+			while ((line = br.readLine()) != null) {
+				// use comma as separator
+				String[] country = line.split(cvsSplitBy);
+				stopWords.add(country[0]);
+				// System.out.println("Country [code= " + country[0] +"]");
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
 				try {
-					br = new BufferedReader(new FileReader(csvFile));
-					while ((line = br.readLine()) != null) {
-						// use comma as separator
-						String[] country = line.split(cvsSplitBy);
-						stopWords.add(country[0]);
-						// System.out.println("Country [code= " + country[0] +"]");
-					}
-
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
+					br.close();
 				} catch (IOException e) {
 					e.printStackTrace();
-				} finally {
-					if (br != null) {
-						try {
-							br.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
 				}
+			}
+		}
 
-				return stopWords;
+		return stopWords;
 	}
 
 	private static ArrayList<String> getFilterWordSimilarity(String signal) {
