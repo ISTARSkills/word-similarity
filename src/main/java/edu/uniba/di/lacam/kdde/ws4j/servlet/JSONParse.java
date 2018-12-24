@@ -7,7 +7,6 @@
 
 package edu.uniba.di.lacam.kdde.ws4j.servlet;
 
-import com.json.parsers.JsonParserFactory;
 
 /**
  * A JSON parser for the data returned from Datamuse.
@@ -27,8 +26,8 @@ public class JSONParse {
      * @return An array of the words.
      */
     public String[] parseWords(String in) {
-        JsonParserFactory factory=JsonParserFactory.getInstance();
-		/*
+		/*        JsonParserFactory factory=JsonParserFactory.getInstance();
+
 		 * JSONParser parser=factory.newJsonParser(); Map jsonData=parser.parseJson(in);
 		 * List al= (List) jsonData.get("root"); String[] results = new
 		 * String[al.size()]; for (int i = 0; i < al.size(); i++) { results[i] =
