@@ -2,11 +2,16 @@ package edu.uniba.di.lacam.kdde.ws4j.servlet;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,6 +19,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -30,6 +36,10 @@ import edu.mit.jwi.item.ISynset;
 import edu.mit.jwi.item.IWord;
 import edu.mit.jwi.item.IWordID;
 import edu.mit.jwi.item.POS;
+import edu.stanford.nlp.ling.HasWord;
+import edu.stanford.nlp.ling.SentenceUtils;
+import edu.stanford.nlp.ling.TaggedWord;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import edu.uniba.di.lacam.kdde.lexical_db.ILexicalDatabase;
 import edu.uniba.di.lacam.kdde.lexical_db.MITWordNet;
 import edu.uniba.di.lacam.kdde.ws4j.RelatednessCalculator;
@@ -247,10 +257,17 @@ public class WordSimilarityServlet extends HttpServlet {
 				}else if(!isSignalNegative && !isConversationNegative) {
 					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
 							value);
-				}else {
-					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
-							1-value);
 				}
+				else {
+					value=(1-value);
+					if (value >= 0.90) {
+					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
+							value);
+					}
+				}
+			}
+			else {
+				stanfordSimilarity(signal,conversationBlock);
 			}
 		}
 
@@ -258,8 +275,73 @@ public class WordSimilarityServlet extends HttpServlet {
 
 	}
 
+	private static void stanfordSimilarity(String signal,String conversationBlock) {
+		// TODO Auto-generated method stub
+		MaxentTagger tagger = null;
+		try {
+			tagger = new MaxentTagger(new FileInputStream(new File(
+					"C:\\Users\\Vaibhav Verma\\git\\word-similarity\\src\\main\\resources\\english-left3words-distsim.tagger")));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		List<List<HasWord>> sentences = MaxentTagger.tokenizeText(new StringReader(signal));
+		List<List<HasWord>> conversationSentence = MaxentTagger.tokenizeText(new StringReader(conversationBlock));
+
+		HashMap<String, ArrayList<String>> signalMap = generateSentanceMap(tagger, sentences);
+		HashMap<String, ArrayList<String>> convaerSationMap = generateSentanceMap(tagger, conversationSentence);
+		
+		 
+		 
+		boolean isMatch=false;
+		for (String pos : signalMap.keySet()) {
+			if (!pos.startsWith("JJ") && !pos.startsWith("DT") && !pos.startsWith(".")) {
+				isMatch=matchList(signalMap.get(pos),convaerSationMap.get(pos));
+				if(!isMatch) {
+					break;
+				}
+			}
+		}
+		System.out.println("isMatch "+isMatch);
+	}
+	private static HashMap<String, ArrayList<String>> generateSentanceMap(MaxentTagger tagger,
+			List<List<HasWord>> sentences) {
+		HashMap<String, ArrayList<String>> sentanceMap = new HashMap<String, ArrayList<String>>();
+
+		for (List<HasWord> sentence : sentences) {
+			List<TaggedWord> tSentence = tagger.tagSentence(sentence);
+			for (TaggedWord list : tSentence) {
+				System.out.println(list.word() + "\t " + list.tag() + " \t ");
+				if (sentanceMap.containsKey(list.tag())) {
+					sentanceMap.get(list.tag()).add(list.word());
+				} else {
+					ArrayList<String> wordList = new ArrayList<String>();
+					wordList.add(list.word());
+					sentanceMap.put(list.tag(), wordList);
+				}
+			}
+			System.out.println();
+			System.out.println(SentenceUtils.listToString(tSentence, false));
+		}
+		return sentanceMap;
+	}
+
+	private static boolean matchList(ArrayList<String> list1, ArrayList<String> list2) {
+		for (String string : list2) {
+			for (String string2 : list2) {
+				if(!string.equalsIgnoreCase(string2)) {
+					return false;
+				}
+			}
+		}
+		return true;
+
+	}
+
 	private static ArrayList<String> getNegativeWords() {
- 				String csvFile = "C:\\Users\\Vaibhav Verma\\git\\word-similarity\\src\\main\\resources\\negative_words.txt";
+		//URL resource = Resources.getResource("negative_words.txt");
+		//String csvFile = resource.getFile();   // get file path 
+		String csvFile = "/var/negative_words.txt";
 				BufferedReader br = null;
 				String line = "";
 				String cvsSplitBy = ",";
@@ -314,7 +396,7 @@ public class WordSimilarityServlet extends HttpServlet {
 
 	private static ArrayList<String> getStopWords() {
 		// TODO Auto-generated method stub
-		String csvFile = "C:\\Users\\Vaibhav Verma\\git\\word-similarity\\src\\main\\resources\\stop_word.txt";
+		String csvFile = "/var/stop_word.txt";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";
@@ -434,7 +516,7 @@ public class WordSimilarityServlet extends HttpServlet {
 	}
 
 	private static ArrayList<String> removeStopWords(String sentance) {
-		String csvFile = "C:\\Users\\Vaibhav Verma\\git\\word-similarity\\src\\main\\resources\\stop_word.txt";
+		String csvFile = "/var/stop_word.txt";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";

@@ -34,7 +34,7 @@ public class StanFordSentence implements generateSentanceMap {
 		 
 		boolean isMatch=false;
 		for (String pos : signalMap.keySet()) {
-			if (!pos.startsWith("JJ") && !pos.startsWith("DT")) {
+			if (!pos.startsWith("JJ") && !pos.startsWith("DT") && !pos.startsWith(".")) {
 				isMatch=matchList(signalMap.get(pos),convaerSationMap.get(pos));
 				if(!isMatch) {
 					break;
