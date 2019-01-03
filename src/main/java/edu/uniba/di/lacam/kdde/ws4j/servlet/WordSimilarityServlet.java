@@ -63,7 +63,7 @@ public class WordSimilarityServlet extends HttpServlet {
 
 	private static RelatednessCalculator[] rcs;
 	private static IRAMDictionary dict = new MITWordNet().getDictionary();
-	private static File wiktionaryDirectory = new File("/var/TARGET_DIRECTORY");
+	private static File wiktionaryDirectory = new File("c:\\TARGET_DIRECTORY");
 	private static IWiktionaryEdition wkt = JWKTL.openEdition(wiktionaryDirectory);
 	static {
 		WS4JConfiguration.getInstance().setMemoryDB(false);
@@ -132,69 +132,73 @@ public class WordSimilarityServlet extends HttpServlet {
 			return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.CONTAINS.name(), 1d);
 		}
 
-		IWiktionaryPage page = wkt.getPageForWord(signal);
+		//IWiktionaryPage page = wkt.getPageForWord(signal);
+		List<IWiktionaryPage> pages = wkt.getPagesForWord(signal, true);
 
-		if (page != null) {
+		if (pages.size() != 0) {
 			System.out.println("Entry found in wictionary for " + signal);
 
-			for (IWiktionaryEntry entry : page.getEntries()) {
-				for (IWiktionarySense sense : entry.getSenses()) {
-					for (IWiktionaryRelation word : sense.getRelations(RelationType.SYNONYM)) {
-						String synonym = word.getTarget();
-						System.out.println("RelationType.SYNONYM->" + synonym);
-						if (synonym.equalsIgnoreCase(conversationBlock)) {
-							return new SimilalrityObject(signal, conversationBlock, true,
-									MatchTypes.SYNONYM_EXACT.name(), 1d);
+			for (int i = 0; i < pages.size(); i++) {
+				IWiktionaryPage page = pages.get(i);
+				for (IWiktionaryEntry entry : page.getEntries()) {
+					for (IWiktionarySense sense : entry.getSenses()) {
+						for (IWiktionaryRelation word : sense.getRelations(RelationType.SYNONYM)) {
+							String synonym = word.getTarget();
+							System.out.println("RelationType.SYNONYM->" + synonym);
+							if (synonym.equalsIgnoreCase(conversationBlock)) {
+								return new SimilalrityObject(signal, conversationBlock, true,
+										MatchTypes.SYNONYM_EXACT.name(), 1d);
+							}
+
+							if (conversationBlock.toLowerCase().contains(synonym)) {
+								return new SimilalrityObject(signal, conversationBlock, true,
+										MatchTypes.SYNONYM_CONTAINS.name(), 1d);
+							}
 						}
 
-						if (conversationBlock.toLowerCase().contains(synonym)) {
-							return new SimilalrityObject(signal, conversationBlock, true,
-									MatchTypes.SYNONYM_CONTAINS.name(), 1d);
+						for (IWiktionaryRelation word : sense.getRelations(RelationType.HYPERNYM)) {
+							String synonym = word.getTarget();
+							System.out.println("RelationType.HYPERNYM->" + synonym);
+							if (synonym.equalsIgnoreCase(conversationBlock)) {
+								return new SimilalrityObject(signal, conversationBlock, true,
+										MatchTypes.HYPERNYM_EXACT.name(), 1d);
+							}
+
+							if (conversationBlock.toLowerCase().contains(synonym)) {
+								return new SimilalrityObject(signal, conversationBlock, true,
+										MatchTypes.HYPERNYM_CONTAINS.name(), 1d);
+							}
+						}
+
+						for (IWiktionaryRelation word : sense.getRelations(RelationType.HYPONYM)) {
+							String synonym = word.getTarget();
+							System.out.println("RelationType.HYPONYM->" + synonym);
+							if (synonym.equalsIgnoreCase(conversationBlock)) {
+								return new SimilalrityObject(signal, conversationBlock, true,
+										MatchTypes.HYPONYM_EXACT.name(), 1d);
+							}
+
+							if (conversationBlock.toLowerCase().contains(synonym)) {
+								return new SimilalrityObject(signal, conversationBlock, true,
+										MatchTypes.HYPONYM_CONTAINS.name(), 1d);
+							}
+						}
+
+						for (IWiktionaryRelation word : sense.getRelations(RelationType.COORDINATE_TERM)) {
+							String synonym = word.getTarget();
+							System.out.println("RelationType.COORDINATE_TERM->" + synonym);
+							if (synonym.equalsIgnoreCase(conversationBlock)) {
+								return new SimilalrityObject(signal, conversationBlock, true,
+										MatchTypes.COORDINATE_TERM_EXACT.name(), 1d);
+							}
+
+							if (conversationBlock.toLowerCase().contains(synonym)) {
+								return new SimilalrityObject(signal, conversationBlock, true,
+										MatchTypes.COORDINATE_TERM_CONTAINS.name(), 1d);
+							}
 						}
 					}
-
-					for (IWiktionaryRelation word : sense.getRelations(RelationType.HYPERNYM)) {
-						String synonym = word.getTarget();
-						System.out.println("RelationType.HYPERNYM->" + synonym);
-						if (synonym.equalsIgnoreCase(conversationBlock)) {
-							return new SimilalrityObject(signal, conversationBlock, true,
-									MatchTypes.HYPERNYM_EXACT.name(), 1d);
-						}
-
-						if (conversationBlock.toLowerCase().contains(synonym)) {
-							return new SimilalrityObject(signal, conversationBlock, true,
-									MatchTypes.HYPERNYM_CONTAINS.name(), 1d);
-						}
-					}
-
-					for (IWiktionaryRelation word : sense.getRelations(RelationType.HYPONYM)) {
-						String synonym = word.getTarget();
-						System.out.println("RelationType.HYPONYM->" + synonym);
-						if (synonym.equalsIgnoreCase(conversationBlock)) {
-							return new SimilalrityObject(signal, conversationBlock, true,
-									MatchTypes.HYPONYM_EXACT.name(), 1d);
-						}
-
-						if (conversationBlock.toLowerCase().contains(synonym)) {
-							return new SimilalrityObject(signal, conversationBlock, true,
-									MatchTypes.HYPONYM_CONTAINS.name(), 1d);
-						}
-					}
-
-					for (IWiktionaryRelation word : sense.getRelations(RelationType.COORDINATE_TERM)) {
-						String synonym = word.getTarget();
-						System.out.println("RelationType.COORDINATE_TERM->" + synonym);
-						if (synonym.equalsIgnoreCase(conversationBlock)) {
-							return new SimilalrityObject(signal, conversationBlock, true,
-									MatchTypes.COORDINATE_TERM_EXACT.name(), 1d);
-						}
-
-						if (conversationBlock.toLowerCase().contains(synonym)) {
-							return new SimilalrityObject(signal, conversationBlock, true,
-									MatchTypes.COORDINATE_TERM_CONTAINS.name(), 1d);
-						}
-					}
-				}
+				} 
 			}
 
 			/*

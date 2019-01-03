@@ -18,10 +18,10 @@ public class WordTest {
 		// TODO Auto-generated method stub
 		
 		StringBuffer out = new StringBuffer();
-		String csvFile = "C:\\Users\\Vaibhav Verma\\Downloads\\similar.csv";
+		String csvFile = "C:\\rw\\rw\\rw.txt";
 		BufferedReader br = null;
 		String line = "";
-		String cvsSplitBy = ",";
+		String cvsSplitBy = "\t";
 
 		try {
 
@@ -40,10 +40,10 @@ public class WordTest {
 							.getWordSimilarty(country[0].trim().toLowerCase(), country[1].trim().toLowerCase())
 							.getTypeOfMatch());
 					
-					out.append(country[0].trim().toLowerCase() + "\t" + country[1].trim().toLowerCase() +"\t" + WordSimilarityServlet
+					out.append(country[0].trim().toLowerCase() + "," + country[1].trim().toLowerCase() +"," + WordSimilarityServlet
 							.getWordSimilarty(country[0].trim().toLowerCase(), country[1].trim().toLowerCase()).getTypeOfMatch() + "\r\n" );
 				} catch (Exception e) {
-					out.append(country[0].trim().toLowerCase() + "\t" + country[1].trim().toLowerCase() +"\t NO_MATCH \r\n" );
+					out.append(country[0].trim().toLowerCase() + "," + country[1].trim().toLowerCase() +", NO_MATCH \r\n" );
 				}
 			}
 
