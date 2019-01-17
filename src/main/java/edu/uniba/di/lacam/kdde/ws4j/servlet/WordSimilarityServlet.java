@@ -52,7 +52,11 @@ import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 @WebServlet(value = "/wordsimilarity")
 public class WordSimilarityServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	static MaxentTagger tagger = null;
+	
+	
+	
+	
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -73,6 +77,14 @@ public class WordSimilarityServlet extends HttpServlet {
 		        new HirstStOnge(db), new LeacockChodorow(db), new Lesk(db), new WuPalmer(db),
 		        new Resnik(db), new JiangConrath(db), new Lin(db), new Path(db)*/
 		rcs = new RelatednessCalculator[] { new WuPalmer(db) };
+		
+		try {
+			tagger = new MaxentTagger(new FileInputStream(new File(
+					"C:\\Users\\Vaibhav Verma\\git\\word-similarity\\src\\main\\resources\\english-left3words-distsim.tagger")));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -250,7 +262,7 @@ public class WordSimilarityServlet extends HttpServlet {
 				}
 			}
 
-			boolean resstanford = stanfordSimilarity(signal, conversationBlock);
+			boolean resstanford =  stanfordSimilarity(signal, conversationBlock);
 			if (resstanford) {
 				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.STANFORD_SIMILARITY.name(),
 						1d);
@@ -301,14 +313,7 @@ public class WordSimilarityServlet extends HttpServlet {
 		System.out.println("stanfordSimilarity->");
 		boolean isMatch = false;
 		try {
-			MaxentTagger tagger = null;
-			try {
-				tagger = new MaxentTagger(new FileInputStream(new File(
-						"C:\\Users\\Vaibhav Verma\\git\\word-similarity\\src\\main\\resources\\english-left3words-distsim.tagger")));
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
 			List<List<HasWord>> sentences = MaxentTagger.tokenizeText(new StringReader(signal));
 			List<List<HasWord>> conversationSentence = MaxentTagger.tokenizeText(new StringReader(conversationBlock));
 
