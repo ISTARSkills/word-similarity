@@ -369,10 +369,28 @@ public class WordSimilarityServlet extends HttpServlet {
 		return sentanceMap;
 	}
 
-	private static boolean matchList(ArrayList<String> list1, ArrayList<String> list2) {
-		for (String string : list2) {
-			for (String string2 : list2) {
-				if (!string.equalsIgnoreCase(string2)) {
+	public static boolean matchList(ArrayList<String> list1, ArrayList<String> list2) {
+		if (list1.size() > list2.size()) {
+			for (String string : list2) {
+				boolean isMatch = false;
+				for (String string2 : list1) {
+					if (string.equalsIgnoreCase(string2)) {
+						isMatch = true;
+					}
+				}
+				if (!isMatch) {
+					return false;
+				}
+			}
+		} else {
+			for (String string : list1) {
+				boolean isMatch = false;
+				for (String string2 : list2) {
+					if (string.equalsIgnoreCase(string2)) {
+						isMatch = true;
+					}
+				}
+				if (!isMatch) {
 					return false;
 				}
 			}
