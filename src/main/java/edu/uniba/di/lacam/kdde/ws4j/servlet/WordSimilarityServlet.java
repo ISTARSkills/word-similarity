@@ -67,7 +67,7 @@ public class WordSimilarityServlet extends HttpServlet {
 
 	private static RelatednessCalculator[] rcs;
 	private static IRAMDictionary dict = new MITWordNet().getDictionary();
-	private static File wiktionaryDirectory = new File("c:\\TARGET_DIRECTORY");
+	private static File wiktionaryDirectory = new File("/var/TARGET_DIRECTORY");
 	private static IWiktionaryEdition wkt = JWKTL.openEdition(wiktionaryDirectory);
 	static {
 		WS4JConfiguration.getInstance().setMemoryDB(false);
@@ -80,7 +80,7 @@ public class WordSimilarityServlet extends HttpServlet {
 		
 		try {
 			tagger = new MaxentTagger(new FileInputStream(new File(
-					"C:\\Users\\Vaibhav Verma\\git\\word-similarity\\src\\main\\resources\\english-left3words-distsim.tagger")));
+					"/var/english-left3words-distsim.tagger")));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
