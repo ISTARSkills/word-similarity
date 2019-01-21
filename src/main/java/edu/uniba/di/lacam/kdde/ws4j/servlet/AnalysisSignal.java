@@ -18,14 +18,33 @@ import de.tudarmstadt.ukp.jwktl.api.RelationType;
  */
 public class AnalysisSignal {
 	public AnalysisSignal(int id, String signal) {
-		List<IWiktionaryPage> pages = WordSimilarityServlet.wkt.getPagesForWord(signal, true);
+		//List<IWiktionaryPage> pages = WordSimilarityServlet.wkt.getPagesForWord(signal, true);
+		word=signal;
+		this.id=id;
+ 		IWiktionaryPage page = WordSimilarityServlet.wkt.getPageForWord(signal);
+		try {
+			for (IWiktionaryEntry entry : page.getEntries()) {
+				for (IWiktionarySense sense : entry.getSenses()) {
+					for (IWiktionaryRelation word : sense.getRelations(RelationType.SYNONYM)) {
+						String synonym = word.getTarget();
+  						SignalPhrase phrase = new SignalPhrase(synonym, word.getRelationType());
+						synonyms.add(phrase);
+					}
+ 				}
+			}
+		} catch (Exception e) {
+		}
+	}
 
-		if (pages.size() != 0) {
+	
+	/*-	if (pages.size() != 0) {
 			System.out.println("Entry found in wictionary for " + signal);
-
+			this.id=id;
+			
 			for (int i = 0; i < pages.size(); i++) {
 				IWiktionaryPage page = pages.get(i);
 				for (IWiktionaryEntry entry : page.getEntries()) {
+					try {
 					for (IWiktionarySense sense : entry.getSenses()) {
 						for (IWiktionaryRelation word : sense.getRelations()) {
 							String synonym = word.getTarget();
@@ -35,13 +54,14 @@ public class AnalysisSignal {
 						}
 
 					}
+					} catch (Exception e) {
+					}
 				}
 			}
-		}
-	}
-
+		}*/
+	
 	int id;
 	String word;
-	ArrayList<SignalPhrase> synonyms;
+	ArrayList<SignalPhrase> synonyms=new ArrayList<SignalPhrase>();
 
 }

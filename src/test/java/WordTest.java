@@ -36,12 +36,16 @@ public class WordTest {
 				try {
 					
 					
-					System.out.println(WordSimilarityServlet
-							.getWordSimilarty(country[0].trim().toLowerCase(), country[1].trim().toLowerCase())
-							.getTypeOfMatch());
-					
-					out.append(country[0].trim().toLowerCase() + "," + country[1].trim().toLowerCase() +"," + WordSimilarityServlet
-							.getWordSimilarty(country[0].trim().toLowerCase(), country[1].trim().toLowerCase()).getTypeOfMatch() + "\r\n" );
+					/*
+					 * System.out.println(WordSimilarityServlet
+					 * .getWordSimilarty(country[0].trim().toLowerCase(),
+					 * country[1].trim().toLowerCase()) .getTypeOfMatch());
+					 * 
+					 * out.append(country[0].trim().toLowerCase() + "," +
+					 * country[1].trim().toLowerCase() +"," + WordSimilarityServlet
+					 * .getWordSimilarty(country[0].trim().toLowerCase(),
+					 * country[1].trim().toLowerCase()).getTypeOfMatch() + "\r\n" );
+					 */
 				} catch (Exception e) {
 					out.append(country[0].trim().toLowerCase() + "," + country[1].trim().toLowerCase() +", NO_MATCH \r\n" );
 				}

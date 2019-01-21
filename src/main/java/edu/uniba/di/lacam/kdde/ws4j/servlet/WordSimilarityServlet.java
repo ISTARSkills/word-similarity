@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import de.tudarmstadt.ukp.jwktl.JWKTL;
@@ -52,7 +54,7 @@ import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 @WebServlet(value = "/wordsimilarity")
 public class WordSimilarityServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	static MaxentTagger tagger = null;
+	public static MaxentTagger tagger = null;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -62,11 +64,16 @@ public class WordSimilarityServlet extends HttpServlet {
 		// TODO Auto-generated constructor stub
 	}
 
-	private static RelatednessCalculator[] rcs;
+	public static RelatednessCalculator[] rcs;
 	private static IRAMDictionary dict = new MITWordNet().getDictionary();
 	private static File wiktionaryDirectory = new File("/var/TARGET_DIRECTORY");
 	public static IWiktionaryEdition wkt = JWKTL.openEdition(wiktionaryDirectory);
+	public static ArrayList<String> stopWords = new ArrayList<String>();
+	public static ArrayList<String> negativeWords = new ArrayList<String>();
 	static {
+		new SignalHolder().init();
+		stopWords = getStopWords();
+		negativeWords = getNegativeWords();
 		WS4JConfiguration.getInstance().setMemoryDB(false);
 		WS4JConfiguration.getInstance().setMFS(true);
 		ILexicalDatabase db = new MITWordNet();
@@ -97,34 +104,79 @@ public class WordSimilarityServlet extends HttpServlet {
 		response.setContentType("application/json");
 
 		PrintWriter out = response.getWriter();
-		SimilalrityObject res = null;
+		ArrayList<SimilalrityObject> results = new ArrayList<SimilalrityObject>();
 		try {
+			if (productID != null) {
+				results = getWordSimilarty(Integer.parseInt(productID), null,
+						java.net.URLDecoder.decode(conversationblock.trim().toLowerCase(), "UTF-8"));
+			} else {
+				results = getWordSimilarty(null, signal,
+						java.net.URLDecoder.decode(conversationblock.trim().toLowerCase(), "UTF-8"));
+			}
 
-			res = getWordSimilarty(Integer.parseInt(productID), signal,
-					java.net.URLDecoder.decode(conversationblock.trim().toLowerCase(), "UTF-8"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty("status", res.typeOfMatch);
-		jsonObject.addProperty("value", res.score);
-
-		out.append(new Gson().toJson(jsonObject));
+		JsonArray jsonArray = new JsonArray();
+		for (SimilalrityObject similalrityObject : results) {
+			if(similalrityObject.score > 0) {
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("status", similalrityObject.typeOfMatch);
+			jsonObject.addProperty("value", similalrityObject.score);
+			jsonObject.addProperty("signalId", similalrityObject.signalId);
+			jsonArray.add(jsonObject);
+			}
+		}
+		out.append(new Gson().toJson(jsonArray));
 		out.flush();
 		out.close();
 
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
-	private SimilalrityObject getWordSimilarty(Integer productID, String signal, String decode) {
+	private ArrayList<SimilalrityObject> getWordSimilarty(Integer productID, String signal, String decode) {
+		ArrayList<SimilalrityObject> similalrityObjects = new ArrayList<SimilalrityObject>();
+		if (productID != null) {
+			ArrayList<AnalysisSignal> signals = SignalHolder.products.get(productID).signals;
+			for (AnalysisSignal analysisSignal : signals) {
+				try {
+					System.err.println("analysisSignal.word "+analysisSignal.word+" >>>>>>>>>>>>>>>> "+decode + " >>>>>>> "+analysisSignal.id);
+					WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(analysisSignal.word.toLowerCase().trim(), decode.toLowerCase().trim(), wkt,
+							stopWords, negativeWords,analysisSignal.id);
+					similalrityObjects.add(wordSimilartyThread.call());
+				} catch (Exception e) {
+				}
+				for (SignalPhrase signalPhrase : analysisSignal.synonyms) {
+					//System.out.println(signalPhrase.alternate + "   " + signalPhrase.type);// SYNONYM
+					try {
+						if (signalPhrase.type.name().equalsIgnoreCase("SYNONYM")) {
+							System.err.println("signalPhrase.alternate "+signalPhrase.alternate+" >>>>>>>>>>>>>>>> "+decode);
+							WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(signalPhrase.alternate.toLowerCase().trim(),
+									decode.toLowerCase().trim(), wkt, stopWords, negativeWords,analysisSignal.id);
+							similalrityObjects.add(wordSimilartyThread.call());
+						}
+					} catch (Exception e) {
+					}
 
-		ArrayList<AnalysisSignal> signals = SignalHolder.products.get(productID).signals;
-	 
-		
-		
-		
-		return null;
+				}
+			}
+		} else {
+			try {
+				WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(signal.toLowerCase().trim(), decode.toLowerCase().trim(), wkt, stopWords,
+						negativeWords,-1);
+				similalrityObjects.add(wordSimilartyThread.call());
+			} catch (Exception e) {
+			}
+		}
+		return similalrityObjects;
 
+	}
+
+	public static void main(String[] args) {
+		ArrayList<AnalysisSignal> signals = SignalHolder.products.get(227).signals;
+		for (AnalysisSignal analysisSignal : signals) {
+			System.out.println("analysisSignal.word 0000 "+analysisSignal.word);
+		}
 	}
 
 	/**
@@ -337,7 +389,7 @@ public class WordSimilarityServlet extends HttpServlet {
 		for (String string : items) {
 			for (String string2 : items2) {
 				if (string2.equalsIgnoreCase(string)) {
-					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.DATA_MUSE.name(), 1d);
+					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.DATA_MUSE.name(), 1d,-1);
 				}
 			}
 		}

@@ -23,20 +23,39 @@ public class StanFordSentence implements generateSentanceMap {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		MaxentTagger tagger = new MaxentTagger(new FileInputStream(new File(
-				"C:\\Users\\Vaibhav Verma\\git\\word-similarity\\src\\main\\resources\\english-left3words-distsim.tagger")));
-		List<List<HasWord>> sentences = MaxentTagger.tokenizeText(new StringReader("This is a cat"));
-		List<List<HasWord>> conversationSentence = MaxentTagger.tokenizeText(new StringReader("Is this a cat?"));
+				"C:\\Users\\Anurag\\git\\word-similarity\\src\\main\\resources\\english-left3words-distsim.tagger")));
+		List<List<HasWord>> sentences = MaxentTagger.tokenizeText(new StringReader("this is a cat"));
+		List<List<HasWord>> conversationSentence = MaxentTagger.tokenizeText(new StringReader("is this a cat"));
 
 		HashMap<String, ArrayList<String>> signalMap = generateSentanceMap(tagger, sentences);
 		HashMap<String, ArrayList<String>> convaerSationMap = generateSentanceMap(tagger, conversationSentence);
 		
+		
+		HashMap<String, String> tagMap=new HashMap<String, String>();
+		
+		for (String pos : signalMap.keySet()) {
+			if (!tagMap.containsKey(pos)) {
+				tagMap.put(pos, pos);
+			}  
+		}
+		for (String pos : convaerSationMap.keySet()) {
+			if (!tagMap.containsKey(pos)) {
+				tagMap.put(pos, pos);
+			}  
+		}
+		
 		 
 		 
 		boolean isMatch=false;
-		for (String pos : signalMap.keySet()) {
-			if (!pos.startsWith("JJ") && !pos.startsWith("DT") && !pos.startsWith(".")) {
-				isMatch=matchList(signalMap.get(pos),convaerSationMap.get(pos));
-				if(!isMatch) {
+		for (String pos : tagMap.keySet()) {
+			if (pos.startsWith("NN") || pos.startsWith("VB") || pos.startsWith(".")  ) {
+				if(signalMap.get(pos)!=null && convaerSationMap.get(pos)!=null) {
+				isMatch = matchList(signalMap.get(pos), convaerSationMap.get(pos));
+				}else {
+					isMatch=false;
+					break;
+				}
+				if (!isMatch) {
 					break;
 				}
 			}

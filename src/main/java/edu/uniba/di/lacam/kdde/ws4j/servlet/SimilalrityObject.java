@@ -13,6 +13,7 @@ public class SimilalrityObject {
 	boolean ismatched;
 	String typeOfMatch;
 	Double score;
+	Integer signalId;
 	
 	
 	
@@ -25,14 +26,16 @@ public class SimilalrityObject {
 	
 	
 
+	 
 	public SimilalrityObject(String signal, String conversationBlock, boolean ismatched, String typeOfMatch,
-			Double score) {
+			Double score, Integer signalId) {
 		super();
 		this.signal = signal;
 		this.conversationBlock = conversationBlock;
 		this.ismatched = ismatched;
 		this.typeOfMatch = typeOfMatch;
 		this.score = score;
+		this.signalId = signalId;
 	}
 	public String getSignal() {
 		return signal;
@@ -63,6 +66,12 @@ public class SimilalrityObject {
 	}
 	public void setScore(Double score) {
 		this.score = score;
+	}
+	public Integer getSignalId() {
+		return signalId;
+	}
+	public void setSignalId(Integer signalId) {
+		this.signalId = signalId;
 	}
 	
 	

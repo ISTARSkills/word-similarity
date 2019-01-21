@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,17 +16,25 @@ import de.tudarmstadt.ukp.jwktl.api.IWiktionaryPage;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryRelation;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionarySense;
 import de.tudarmstadt.ukp.jwktl.api.RelationType;
+import edu.mit.jwi.IRAMDictionary;
+import edu.mit.jwi.item.IIndexWord;
+import edu.mit.jwi.item.ISynset;
+import edu.mit.jwi.item.IWord;
+import edu.mit.jwi.item.IWordID;
+import edu.mit.jwi.item.POS;
 import edu.uniba.di.lacam.kdde.lexical_db.ILexicalDatabase;
 import edu.uniba.di.lacam.kdde.lexical_db.MITWordNet;
 import edu.uniba.di.lacam.kdde.ws4j.RelatednessCalculator;
+import edu.uniba.di.lacam.kdde.ws4j.servlet.WordSimilarityServlet;
 import edu.uniba.di.lacam.kdde.ws4j.similarity.WuPalmer;
 import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 
 public class SimilarityCalculationDemo {
 
 	private static RelatednessCalculator[] rcs;
-	private static File wiktionaryDirectory = new File("C:\\Users\\Vaibhav Verma\\Documents\\TARGET_DIRECTORY");
-	private static IWiktionaryEdition wkt = JWKTL.openEdition(wiktionaryDirectory);
+	//private static File wiktionaryDirectory = new File("C:\\Users\\Anurag\\Documents\\TARGET_DIRECTORY");
+	//private static IWiktionaryEdition wkt = JWKTL.openEdition(wiktionaryDirectory);
+	private static IRAMDictionary dict = new MITWordNet().getDictionary();
 	static {
 		WS4JConfiguration.getInstance().setMemoryDB(false);
 		WS4JConfiguration.getInstance().setMFS(true);
@@ -38,9 +47,119 @@ public class SimilarityCalculationDemo {
 
 	public static void main(String[] args) {
 
-		sentanceSimilarity("I kill you", "I murder you");
+		// sentanceSimilarity("I kill you", "I murder you");
+		 csvReader() ;
+		
+	}
+	
+
+	private static void csvReader() {
+		// TODO Auto-generated method stub
+		
+		StringBuffer out = new StringBuffer();
+		String csvFile = "C:\\Users\\Anurag\\Downloads\\similarwords.csv";
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = ",";
+
+		try {
+			int i=0;
+
+			br = new BufferedReader(new FileReader(csvFile));
+			while ((line = br.readLine()) != null) {
+				
+				
+				// use comma as separator
+				String[] country = line.split(cvsSplitBy);
+
+				// System.out.println("Country [code= " + country[0] + " , name=" + country[1] +
+				// "]");
+				try {
+					
+					/*
+					 * System.out.println(WordSimilarityServlet
+					 * .getWordSimilarty(country[0].trim().toLowerCase(),
+					 * country[1].trim().toLowerCase()) .getTypeOfMatch());
+					 * edu.uniba.di.lacam.kdde.ws4j.servlet.SimilalrityObject obj=
+					 * WordSimilarityServlet .getWordSimilarty(country[0].trim().toLowerCase(),
+					 * country[1].trim().toLowerCase());
+					 * 
+					 * if(!obj.getTypeOfMatch().equalsIgnoreCase("NO_MATCH")) {
+					 * out.append(country[0].trim().toLowerCase() + "\t" +
+					 * country[1].trim().toLowerCase() +"\t" + obj.getTypeOfMatch() +
+					 * "\t"+obj.getScore()+ "\r\n" ); }else { obj =WordSimilarityServlet
+					 * .getWordSimilarty(country[0].trim().toLowerCase(),
+					 * country[1].trim().toLowerCase()); }
+					 */
+				} catch (Exception e) {
+					out.append(country[0].trim().toLowerCase() + "\t" + country[1].trim().toLowerCase() +"\t NO_MATCH \r\n" );
+				}
+				i++;
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		
+		try {
+			File file = new File("C:\\Users\\Anurag\\Downloads\\restest.csv");
+			FileWriter fileWriter = new FileWriter(file);
+			fileWriter.write(out.toString());
+			fileWriter.flush();
+			fileWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
+	private static ArrayList<String> getSysnonyms(String wordd) {
+		ArrayList<POS> poss = new ArrayList<>();
+		ArrayList<String> wordList = new ArrayList<>();
+		poss.add(POS.NOUN);
+		poss.add(POS.ADJECTIVE);
+		poss.add(POS.ADVERB);
+		poss.add(POS.VERB);
+
+		for (POS pos : poss) {
+			IIndexWord idxWord = dict.getIndexWord(wordd, pos); // dict.getIndexWord(inputWord,
+
+			if (idxWord != null) {
+				int x = idxWord.getTagSenseCount();
+				for (int i = 0; i < x; i++) {
+					IWordID wordID = idxWord.getWordIDs().get(i);
+					IWord word = dict.getWord(wordID);
+
+					// Adding Related Words to List of Realted Words
+					ISynset synset = word.getSynset();
+					for (IWord w : synset.getWords()) {
+
+						double value = rcs[0].calcRelatednessOfWords(wordd, w.getLemma());
+						System.out.println(w.getLemma() + " >>>> " + value);
+
+						  //System.out.println(w.getLemma());
+						wordList.add(w.getLemma());
+
+						// output.add(w.getLemma());
+					}
+				}
+			}
+
+		}
+		return wordList;
+
+	}
 	private static void sentanceSimilarity(String sentance1, String sentance2) {
 		long t = System.currentTimeMillis();
 
@@ -121,13 +240,13 @@ public class SimilarityCalculationDemo {
 		 
 		
 		System.out.println("\nDone in " + (System.currentTimeMillis() - t) + " msec.");
-		wkt.close();
+		//wkt.close();
 	}
 
 	private static ArrayList<String> getFilterWordSimilarity(String signal) {
 		// TODO Auto-generated method stub
 		ArrayList<String> synonyms = new ArrayList<String>();
-		IWiktionaryPage page = wkt.getPageForWord(signal);
+		IWiktionaryPage page =null;//wkt.getPageForWord(signal);
 		for (IWiktionaryEntry entry : page.getEntries()) {
 			for (IWiktionarySense sense : entry.getSenses()) {
 				for (IWiktionaryRelation word : sense.getRelations(RelationType.SYNONYM)) {

@@ -22,6 +22,8 @@ public class SignalHolder {
 		
 		String productListSQL = "select * from product where deleted=false";
 		ArrayList<HashMap<String, String>> dbProducts = DBUtils.getInstance().executeQuery(Thread.currentThread().getStackTrace(), productListSQL);
+		
+		System.out.println(dbProducts.size() +" size");
 		for (HashMap<String, String> dbProduct : dbProducts) {
 			products.put(Integer.parseInt(dbProduct.get("id")), new SignalProduct(dbProduct.get("id")));
 		}
