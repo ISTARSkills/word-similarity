@@ -53,10 +53,7 @@ import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 public class WordSimilarityServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	static MaxentTagger tagger = null;
-	
-	
-	
-	
+
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -68,7 +65,7 @@ public class WordSimilarityServlet extends HttpServlet {
 	private static RelatednessCalculator[] rcs;
 	private static IRAMDictionary dict = new MITWordNet().getDictionary();
 	private static File wiktionaryDirectory = new File("/var/TARGET_DIRECTORY");
-	private static IWiktionaryEdition wkt = JWKTL.openEdition(wiktionaryDirectory);
+	public static IWiktionaryEdition wkt = JWKTL.openEdition(wiktionaryDirectory);
 	static {
 		WS4JConfiguration.getInstance().setMemoryDB(false);
 		WS4JConfiguration.getInstance().setMFS(true);
@@ -77,10 +74,9 @@ public class WordSimilarityServlet extends HttpServlet {
 		        new HirstStOnge(db), new LeacockChodorow(db), new Lesk(db), new WuPalmer(db),
 		        new Resnik(db), new JiangConrath(db), new Lin(db), new Path(db)*/
 		rcs = new RelatednessCalculator[] { new WuPalmer(db) };
-		
+
 		try {
-			tagger = new MaxentTagger(new FileInputStream(new File(
-					"/var/english-left3words-distsim.tagger")));
+			tagger = new MaxentTagger(new FileInputStream(new File("/var/english-left3words-distsim.tagger")));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -94,8 +90,9 @@ public class WordSimilarityServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String word1 = request.getParameter("signal");
-		String word2 = request.getParameter("conversationblock");
+		String productID = request.getParameter("productID");
+		String signal = request.getParameter("signal");// signal ID
+		String conversationblock = request.getParameter("conversationblock");
 
 		response.setContentType("application/json");
 
@@ -103,7 +100,8 @@ public class WordSimilarityServlet extends HttpServlet {
 		SimilalrityObject res = null;
 		try {
 
-			res = getWordSimilarty(java.net.URLDecoder.decode(word1.trim().toLowerCase(), "UTF-8"), java.net.URLDecoder.decode(word2.trim().toLowerCase(), "UTF-8"));
+			res = getWordSimilarty(Integer.parseInt(productID), signal,
+					java.net.URLDecoder.decode(conversationblock.trim().toLowerCase(), "UTF-8"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -118,6 +116,17 @@ public class WordSimilarityServlet extends HttpServlet {
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
+	private SimilalrityObject getWordSimilarty(Integer productID, String signal, String decode) {
+
+		ArrayList<AnalysisSignal> signals = SignalHolder.products.get(productID).signals;
+	 
+		
+		
+		
+		return null;
+
+	}
+
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
@@ -128,192 +137,11 @@ public class WordSimilarityServlet extends HttpServlet {
 		doGet(request, response);
 	}
 
-	public static SimilalrityObject getWordSimilarty(String signal, String conversationBlock) {
-
-		/*
-		 * DatamuseQuery q = new DatamuseQuery(); JSONParse jsp = new JSONParse();
-		 * 
-		 * String[] items = jsp.parseWords(q.findSimilar(signal));
-		 */
-		double value = 0d;
-		if (conversationBlock.equalsIgnoreCase(signal)) {
-			return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.EXACT_MATCH.name(), 1d);
-		}
-
-		if (conversationBlock.toLowerCase().contains(signal)) {
-			return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.CONTAINS.name(), 1d);
-		}
-
-		// IWiktionaryPage page = wkt.getPageForWord(signal);
-		List<IWiktionaryPage> pages = wkt.getPagesForWord(signal, true);
-
-		if (pages.size() != 0) {
-			System.out.println("Entry found in wictionary for " + signal);
-
-			for (int i = 0; i < pages.size(); i++) {
-				IWiktionaryPage page = pages.get(i);
-				for (IWiktionaryEntry entry : page.getEntries()) {
-					for (IWiktionarySense sense : entry.getSenses()) {
-						for (IWiktionaryRelation word : sense.getRelations(RelationType.SYNONYM)) {
-							String synonym = word.getTarget();
-							System.out.println("RelationType.SYNONYM->" + synonym);
-							if (synonym.equalsIgnoreCase(conversationBlock)) {
-								return new SimilalrityObject(signal, conversationBlock, true,
-										MatchTypes.SYNONYM_EXACT.name(), 1d);
-							}
-
-							if (conversationBlock.toLowerCase().contains(synonym)) {
-								return new SimilalrityObject(signal, conversationBlock, true,
-										MatchTypes.SYNONYM_CONTAINS.name(), 1d);
-							}
-						}
-
-						for (IWiktionaryRelation word : sense.getRelations(RelationType.HYPERNYM)) {
-							String synonym = word.getTarget();
-							System.out.println("RelationType.HYPERNYM->" + synonym);
-							if (synonym.equalsIgnoreCase(conversationBlock)) {
-								return new SimilalrityObject(signal, conversationBlock, true,
-										MatchTypes.HYPERNYM_EXACT.name(), 1d);
-							}
-
-							if (conversationBlock.toLowerCase().contains(synonym)) {
-								return new SimilalrityObject(signal, conversationBlock, true,
-										MatchTypes.HYPERNYM_CONTAINS.name(), 1d);
-							}
-						}
-
-						for (IWiktionaryRelation word : sense.getRelations(RelationType.HYPONYM)) {
-							String synonym = word.getTarget();
-							System.out.println("RelationType.HYPONYM->" + synonym);
-							if (synonym.equalsIgnoreCase(conversationBlock)) {
-								return new SimilalrityObject(signal, conversationBlock, true,
-										MatchTypes.HYPONYM_EXACT.name(), 1d);
-							}
-
-							if (conversationBlock.toLowerCase().contains(synonym)) {
-								return new SimilalrityObject(signal, conversationBlock, true,
-										MatchTypes.HYPONYM_CONTAINS.name(), 1d);
-							}
-						}
-
-						for (IWiktionaryRelation word : sense.getRelations(RelationType.COORDINATE_TERM)) {
-							String synonym = word.getTarget();
-							System.out.println("RelationType.COORDINATE_TERM->" + synonym);
-							if (synonym.equalsIgnoreCase(conversationBlock)) {
-								return new SimilalrityObject(signal, conversationBlock, true,
-										MatchTypes.COORDINATE_TERM_EXACT.name(), 1d);
-							}
-
-							if (conversationBlock.toLowerCase().contains(synonym)) {
-								return new SimilalrityObject(signal, conversationBlock, true,
-										MatchTypes.COORDINATE_TERM_CONTAINS.name(), 1d);
-							}
-						}
-					}
-				}
-			}
-
-			/*
-			 * SimilalrityObject
-			 * similalrityObject=getDataMuseWordSimilarty(signal,conversationBlock);;
-			 * if(similalrityObject!=null) { return similalrityObject; }
-			 */
-			// dataMuse Integration
-
-			// wkt.close();
-		} else {
-			boolean isSignalNegative = false;
-			boolean isConversationNegative = false;
-			ArrayList<String> alertnateSignals = new ArrayList<>();
-			ArrayList<String> stopWords = getStopWords();
-			ArrayList<String> negativeWords = getNegativeWords();
-			for (String word : negativeWords) {
-				if (signal.contains(word)) {
-					isSignalNegative = true;
-				}
-				if (conversationBlock.contains(word)) {
-					isConversationNegative = true;
-				}
-
-			}
-			String[] words1 = signal.split(" ");
-			String temp = signal;
-			for (int i = 0; i < words1.length; i++) {
-				String string = words1[i];
-				if (!stopWords.contains(string)) {
-					ArrayList<String> synonymList = getFilterWordSimilarity(string);
-					for (String word : synonymList) {
-						// temp.replaceAll(string, word);
-						alertnateSignals.add(temp.replaceAll(string, word));
-						temp = signal;
-					}
-				}
-			}
-			for (String word : alertnateSignals) {
-				System.out.println("SYNONYM_SENTENCE_ALTERNATE " + word);
-				if (word.equalsIgnoreCase(conversationBlock)) {
-					return new SimilalrityObject(signal, conversationBlock, true,
-							MatchTypes.SYNONYM_SENTENCE_EXACT.name(), 1d);
-				}
-
-				if (conversationBlock.toLowerCase().contains(word)) {
-					return new SimilalrityObject(signal, conversationBlock, true,
-							MatchTypes.SYNONYM_SENTENCE_CONTAINS.name(), 1d);
-				}
-			}
-
-			boolean resstanford =  stanfordSimilarity(signal, conversationBlock);
-			if (resstanford) {
-				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.STANFORD_SIMILARITY.name(),
-						1d);
-			}
-			
-			
-			
-			System.out.println("No Entry found in wictionary for " + signal);
-			value = sentanceSimilarity(signal.trim().toLowerCase(), conversationBlock.trim().toLowerCase());
-			if (value >= 0.90) {
-
-				if ((isSignalNegative && isConversationNegative)
-						&& (signal.contains("?") && conversationBlock.contains("?"))) {
-					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
-							value);
-				} else if ((!isSignalNegative && !isConversationNegative)
-						&& (!signal.contains("?") && !conversationBlock.contains("?"))) {
-					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
-							value);
-				}
-				if ((isSignalNegative && isConversationNegative)
-						&& (!signal.contains("?") && !conversationBlock.contains("?"))) {
-					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
-							value);
-				} else if ((!isSignalNegative && !isConversationNegative)
-						&& (signal.contains("?") && conversationBlock.contains("?"))) {
-					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
-							value);
-				} else {
-					value = (1 - value);
-					if (value >= 0.90) {
-						return new SimilalrityObject(signal, conversationBlock, true,
-								MatchTypes.SENTENCE_SIMILARITY.name(), value);
-					}
-				}
-			}else {
-				// check word by word contains
-				
-				// check noun and verb conatins 
-			}
-		}
-
-		return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.NO_MATCH.name(), value);
-
-	}
-
 	private static boolean stanfordSimilarity(String signal, String conversationBlock) {
 		System.out.println("stanfordSimilarity->");
 		boolean isMatch = false;
 		try {
-			
+
 			List<List<HasWord>> sentences = MaxentTagger.tokenizeText(new StringReader(signal));
 			List<List<HasWord>> conversationSentence = MaxentTagger.tokenizeText(new StringReader(conversationBlock));
 
@@ -445,19 +273,19 @@ public class WordSimilarityServlet extends HttpServlet {
 		ArrayList<String> synonyms = new ArrayList<String>();
 		IWiktionaryPage page = wkt.getPageForWord(signal);
 		try {
-		for (IWiktionaryEntry entry : page.getEntries()) {
-			for (IWiktionarySense sense : entry.getSenses()) {
-				for (IWiktionaryRelation word : sense.getRelations(RelationType.SYNONYM)) {
-					String synonym = word.getTarget();
-					// System.out.println(synonym);
-					synonyms.add(synonym);
-				}
+			for (IWiktionaryEntry entry : page.getEntries()) {
+				for (IWiktionarySense sense : entry.getSenses()) {
+					for (IWiktionaryRelation word : sense.getRelations(RelationType.SYNONYM)) {
+						String synonym = word.getTarget();
+						// System.out.println(synonym);
+						synonyms.add(synonym);
+					}
 
-				// System.out.println(sense.getRelations(RelationType.SYNONYM));
+					// System.out.println(sense.getRelations(RelationType.SYNONYM));
+				}
 			}
+		} catch (Exception e) {
 		}
-		}catch (Exception e) {
- 		}
 		return synonyms;
 
 	}
