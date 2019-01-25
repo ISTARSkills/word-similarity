@@ -4,13 +4,11 @@
 package edu.uniba.di.lacam.kdde.ws4j.servlet;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryEntry;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryPage;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryRelation;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionarySense;
-import de.tudarmstadt.ukp.jwktl.api.RelationType;
 
 /**
  * @author Vaibhav Verma
@@ -21,19 +19,28 @@ public class AnalysisSignal {
 		//List<IWiktionaryPage> pages = WordSimilarityServlet.wkt.getPagesForWord(signal, true);
 		word=signal;
 		this.id=id;
- 		IWiktionaryPage page = WordSimilarityServlet.wkt.getPageForWord(signal);
-		try {
-			for (IWiktionaryEntry entry : page.getEntries()) {
-				for (IWiktionarySense sense : entry.getSenses()) {
-					for (IWiktionaryRelation word : sense.getRelations(RelationType.SYNONYM)) {
-						String synonym = word.getTarget();
-  						SignalPhrase phrase = new SignalPhrase(synonym, word.getRelationType());
-						synonyms.add(phrase);
-					}
- 				}
+		for(IWiktionaryPage page : WordSimilarityServlet.wkt.getPagesForWord(signal, false)){
+			try {
+				
+				for (IWiktionaryEntry entry : page.getEntries()) {
+					for (IWiktionarySense sense : entry.getSenses()) {
+						for (IWiktionaryRelation word : sense.getRelations()) {
+							try {
+								String synonym = word.getTarget();
+								SignalPhrase phrase = new SignalPhrase(synonym, word.getRelationType());
+								synonyms.add(phrase);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								//e.printStackTrace();
+							}
+							
+						}
+	 				}
+				}
+			} catch (Exception e) {
 			}
-		} catch (Exception e) {
 		}
+
 	}
 
 	

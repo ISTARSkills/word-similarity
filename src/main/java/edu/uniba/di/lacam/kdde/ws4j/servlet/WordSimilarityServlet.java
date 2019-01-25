@@ -8,11 +8,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,7 +18,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -142,7 +139,7 @@ public class WordSimilarityServlet extends HttpServlet {
 				try {
 					System.err.println("analysisSignal.word "+analysisSignal.word+" >>>>>>>>>>>>>>>> "+decode + " >>>>>>> "+analysisSignal.id);
 					WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(analysisSignal.word.toLowerCase().trim(), decode.toLowerCase().trim(), wkt,
-							stopWords, negativeWords,analysisSignal.id);
+							stopWords, negativeWords,analysisSignal.id, productID);
 					similalrityObjects.add(wordSimilartyThread.call());
 				} catch (Exception e) {
 				}
@@ -152,7 +149,7 @@ public class WordSimilarityServlet extends HttpServlet {
 						if (signalPhrase.type.name().equalsIgnoreCase("SYNONYM")) {
 							System.err.println("signalPhrase.alternate "+signalPhrase.alternate+" >>>>>>>>>>>>>>>> "+decode);
 							WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(signalPhrase.alternate.toLowerCase().trim(),
-									decode.toLowerCase().trim(), wkt, stopWords, negativeWords,analysisSignal.id);
+									decode.toLowerCase().trim(), wkt, stopWords, negativeWords,analysisSignal.id, productID);
 							similalrityObjects.add(wordSimilartyThread.call());
 						}
 					} catch (Exception e) {
@@ -163,7 +160,7 @@ public class WordSimilarityServlet extends HttpServlet {
 		} else {
 			try {
 				WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(signal.toLowerCase().trim(), decode.toLowerCase().trim(), wkt, stopWords,
-						negativeWords,-1);
+						negativeWords,-1, productID);
 				similalrityObjects.add(wordSimilartyThread.call());
 			} catch (Exception e) {
 			}

@@ -3,7 +3,8 @@
  */
 package edu.uniba.di.lacam.kdde.ws4j.util;
 
-import java.io.InputStream;import java.util.Properties;
+import java.io.InputStream;
+import java.util.Properties;
 /**
  * @author Anurag
  *

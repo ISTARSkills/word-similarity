@@ -6,8 +6,6 @@ package edu.uniba.di.lacam.kdde.ws4j.servlet;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.lucene.queries.function.valuesource.ProductFloatFunction;
-
 import ai.talentify.db.utils.DBUtils;
 
 /**
@@ -27,6 +25,6 @@ public class SignalHolder {
 		for (HashMap<String, String> dbProduct : dbProducts) {
 			products.put(Integer.parseInt(dbProduct.get("id")), new SignalProduct(dbProduct.get("id")));
 		}
-		// 
+		
 	}
 }

@@ -2,7 +2,6 @@ package edu.uniba.di.lacam.kdde.ws4j.util;
 
 import java.beans.PropertyVetoException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -10,9 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
- 
 import org.postgresql.util.PSQLException;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;

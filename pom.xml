@@ -25,11 +25,7 @@
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/com.codesnippets4all/quick-json -->
 		<!-- https://mvnrepository.com/artifact/junit/junit -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-		</dependency>
+		
 
 		<!-- https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-corenlp -->
 		<dependency>
@@ -167,6 +163,14 @@
 			<artifactId>c3p0</artifactId>
 			<version>0.9.5.2</version>
 		</dependency>
+<!-- https://mvnrepository.com/artifact/com.mchange/mchange-commons-java -->
+<dependency>
+    <groupId>com.mchange</groupId>
+    <artifactId>mchange-commons-java</artifactId>
+    <version>0.2.15</version>
+</dependency>
+
+
 	</dependencies>
 
 	<build>
