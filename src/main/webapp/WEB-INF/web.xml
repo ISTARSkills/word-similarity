@@ -4,6 +4,16 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
+  <servlet>
+  	<servlet-name>ProductSignalUpdate</servlet-name>
+  	<display-name>ProductSignalUpdate</display-name>
+  	<description></description>
+  	<servlet-class>edu.uniba.di.lacam.kdde.ws4j.servlet.ProductSignalUpdate</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>ProductSignalUpdate</servlet-name>
+  	<url-pattern>/productsignalupdate</url-pattern>
+  </servlet-mapping>
   <!-- <servlet>
   	<servlet-name>WordSimilarityServlet</servlet-name>
   	<display-name>WordSimilarityServlet</display-name>

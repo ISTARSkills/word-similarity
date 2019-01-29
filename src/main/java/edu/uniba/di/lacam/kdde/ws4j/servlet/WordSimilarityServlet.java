@@ -29,6 +29,7 @@ import de.tudarmstadt.ukp.jwktl.api.IWiktionaryPage;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryRelation;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionarySense;
 import de.tudarmstadt.ukp.jwktl.api.RelationType;
+import de.tudarmstadt.ukp.jwktl.parser.en.components.ENEntryFactory;
 import edu.mit.jwi.IRAMDictionary;
 import edu.mit.jwi.item.IIndexWord;
 import edu.mit.jwi.item.ISynset;
@@ -105,10 +106,10 @@ public class WordSimilarityServlet extends HttpServlet {
 		try {
 			if (productID != null) {
 				results = getWordSimilarty(Integer.parseInt(productID), null,
-						java.net.URLDecoder.decode(conversationblock.trim().toLowerCase(), "UTF-8"));
+						conversationblock);
 			} else {
 				results = getWordSimilarty(null, signal,
-						java.net.URLDecoder.decode(conversationblock.trim().toLowerCase(), "UTF-8"));
+						conversationblock);
 			}
 
 		} catch (Exception e) {
@@ -169,11 +170,12 @@ public class WordSimilarityServlet extends HttpServlet {
 
 	}
 
-	public static void main(String[] args) {
-		ArrayList<AnalysisSignal> signals = SignalHolder.products.get(227).signals;
-		for (AnalysisSignal analysisSignal : signals) {
-			System.out.println("analysisSignal.word 0000 "+analysisSignal.word);
-		}
+	public static void main(String[] args) throws Exception {
+		ArrayList<SignalPhrase> synonyms=new ArrayList<SignalPhrase>();
+		String signal = "पंजाबी पराठा";
+		WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(signal.toLowerCase().trim(), signal, wkt, stopWords,
+				negativeWords,-1, 434);
+		System.err.println(wordSimilartyThread.call().getScore());
 	}
 
 	/**

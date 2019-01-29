@@ -42,7 +42,12 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 		}
 
 		if (conversationBlock.toLowerCase().contains(signal.toLowerCase())) {
-			return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.CONTAINS.name(), 1d, signalId);
+			String conversions[]=conversationBlock.split(" ");
+ 			for (String conv : conversions) {
+				if(conv.equalsIgnoreCase(signal)) {
+					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.CONTAINS.name(), 1d, signalId);
+				}
+			}
 		}
 
 		// IWiktionaryPage page = wkt.getPageForWord(signal);
