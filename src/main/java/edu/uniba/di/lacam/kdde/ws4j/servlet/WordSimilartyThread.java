@@ -42,20 +42,33 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 		}
 
 		if (conversationBlock.toLowerCase().contains(signal.toLowerCase())) {
-			String conversions[]=conversationBlock.split(" ");
- 			for (String conv : conversions) {
-				if(conv.equalsIgnoreCase(signal)) {
-					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.CONTAINS.name(), 1d, signalId);
+			String conversions[] = conversationBlock.split(" ");
+			for (String conv : conversions) {
+				if (conv.equalsIgnoreCase(signal)) {
+					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.CONTAINS.name(), 1d,
+							signalId);
 				}
 			}
+		}
+		String tempSignal = signal.toLowerCase();
+		tempSignal = tempSignal.replace(".", "").replace(",", "").replace("?", "");
+		tempSignal = " " + tempSignal + " ";
+		String tempConversation = conversationBlock.toLowerCase();
+		tempConversation = tempConversation.replace(".", "").replace(",", "").replace("?", "");
+		if (tempConversation.toLowerCase().contains(tempSignal)) {
+			return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.CONTAINS.name(), 1d, signalId);
+
 		}
 
 		// IWiktionaryPage page = wkt.getPageForWord(signal);
 		for (AnalysisSignal signal : SignalHolder.products.get(productID).signals) {
 			if (signal.id == signalId) {
 				for (SignalPhrase phrase : signal.synonyms) {
-					if(conversationBlock.toLowerCase().contains(phrase.alternate.toLowerCase())) {
-						return new SimilalrityObject(signal.word, conversationBlock, true, phrase.type.name(), 1d, signalId);
+					String tempPhrase=" "+phrase.alternate.toLowerCase()+" ";
+					String tempConversationBlock=" "+conversationBlock.toLowerCase()+" ";
+					if (tempConversationBlock.contains(tempPhrase)) {
+						return new SimilalrityObject(signal.word, conversationBlock, true, phrase.type.name(), 1d,
+								signalId);
 					}
 				}
 			}
@@ -168,7 +181,8 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 				}
 			}
 			for (String pos : tagMap.keySet()) {
-				if (pos.startsWith("FW") || pos.startsWith("CD") || pos.startsWith("NN") || pos.startsWith("VB") || pos.startsWith(".")) {
+				if (pos.startsWith("FW") || pos.startsWith("CD") || pos.startsWith("NN") || pos.startsWith("VB")
+						|| pos.startsWith(".")) {
 					if (signalMap.get(pos) != null && convaerSationMap.get(pos) != null) {
 						isMatch = matchList(signalMap.get(pos), convaerSationMap.get(pos));
 					} else {
