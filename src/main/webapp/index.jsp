@@ -88,10 +88,12 @@ var conversationBlock;
 							console.log("word1 " + word + "   word2" + conversationBlock);
 							$.get("wordsimilarity?signal=" + word
 									+ "&conversationblock=" + conversationBlock, function(
-									data) {
-								// alert("data "+data);
-								
-								$('#tablebody').append('<tr> <th  class="text-center" scope="row">'+word+'</th><td  class="text-center">'+conversationBlock+'</td> <td  class="text-center">'+data.status+'</td> <td  class="text-center">'+data.value+'</td> </tr>');
+									dataArray) {
+								for (i in dataArray) {
+									var data = dataArray[i];
+									$('#tablebody').append('<tr> <th  class="text-center" scope="row">'+word+'</th><td  class="text-center">'+conversationBlock+'</td> <td  class="text-center">'+data.status+'</td> <td  class="text-center">'+data.value+'</td> </tr>');
+
+									}
 							
 
 							});
