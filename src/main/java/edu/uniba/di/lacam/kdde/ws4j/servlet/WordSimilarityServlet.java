@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import ai.talentify.db.utils.DBProperties;
 import de.tudarmstadt.ukp.jwktl.JWKTL;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryEdition;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryEntry;
@@ -105,11 +106,9 @@ public class WordSimilarityServlet extends HttpServlet {
 		ArrayList<SimilalrityObject> results = new ArrayList<SimilalrityObject>();
 		try {
 			if (productID != null) {
-				results = getWordSimilarty(Integer.parseInt(productID), null,
-						conversationblock);
+				results = getWordSimilarty(Integer.parseInt(productID), null, conversationblock);
 			} else {
-				results = getWordSimilarty(null, signal,
-						conversationblock);
+				results = getWordSimilarty(null, signal, conversationblock);
 			}
 
 		} catch (Exception e) {
@@ -117,12 +116,12 @@ public class WordSimilarityServlet extends HttpServlet {
 		}
 		JsonArray jsonArray = new JsonArray();
 		for (SimilalrityObject similalrityObject : results) {
-			if(similalrityObject.score > 0) {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("status", similalrityObject.typeOfMatch);
-			jsonObject.addProperty("value", similalrityObject.score);
-			jsonObject.addProperty("signalId", similalrityObject.signalId);
-			jsonArray.add(jsonObject);
+			if (similalrityObject.score > 0) {
+				JsonObject jsonObject = new JsonObject();
+				jsonObject.addProperty("status", similalrityObject.typeOfMatch);
+				jsonObject.addProperty("value", similalrityObject.score);
+				jsonObject.addProperty("signalId", similalrityObject.signalId);
+				jsonArray.add(jsonObject);
 			}
 		}
 		out.append(new Gson().toJson(jsonArray));
@@ -136,22 +135,59 @@ public class WordSimilarityServlet extends HttpServlet {
 		ArrayList<SimilalrityObject> similalrityObjects = new ArrayList<SimilalrityObject>();
 		if (productID != null) {
 			ArrayList<AnalysisSignal> signals = SignalHolder.products.get(productID).signals;
+
 			for (AnalysisSignal analysisSignal : signals) {
 				try {
-					System.err.println("analysisSignal.word "+analysisSignal.word+" >>>>>>>>>>>>>>>> "+decode + " >>>>>>> "+analysisSignal.id);
-					WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(analysisSignal.word.toLowerCase().trim(), decode.toLowerCase().trim(), wkt,
-							stopWords, negativeWords,analysisSignal.id, productID);
-					similalrityObjects.add(wordSimilartyThread.call());
+					System.err.println("analysisSignal.word " + analysisSignal.word + " >>>>>>>>>>>>>>>> " + decode
+							+ " >>>>>>> " + analysisSignal.id);
+					WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(
+							analysisSignal.word.toLowerCase().trim(), decode.toLowerCase().trim(), wkt, stopWords,
+							negativeWords, analysisSignal.id, productID);
+					SimilalrityObject similalrityObject = wordSimilartyThread.call();
+					
+					if(similalrityObject.getTypeOfMatch().equalsIgnoreCase("ANTONYM")){
+						double score=similalrityObject.getScore();
+						similalrityObject.setScore(1-score);
+					}
+					boolean isAdd = true;
+					
+					for (SimilalrityObject so : similalrityObjects) {
+						if ((so.signalId.intValue() == similalrityObject.signalId.intValue())
+								&& (so.score.doubleValue() == similalrityObject.score.doubleValue())) {
+							isAdd = false;
+						}
+					}
+					if (isAdd) {
+						similalrityObjects.add(similalrityObject);
+					}
+
 				} catch (Exception e) {
 				}
 				for (SignalPhrase signalPhrase : analysisSignal.synonyms) {
-					//System.out.println(signalPhrase.alternate + "   " + signalPhrase.type);// SYNONYM
+					// System.out.println(signalPhrase.alternate + " " + signalPhrase.type);//
+					// SYNONYM
 					try {
 						if (signalPhrase.type.name().equalsIgnoreCase("SYNONYM")) {
-							System.err.println("signalPhrase.alternate "+signalPhrase.alternate+" >>>>>>>>>>>>>>>> "+decode);
-							WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(signalPhrase.alternate.toLowerCase().trim(),
-									decode.toLowerCase().trim(), wkt, stopWords, negativeWords,analysisSignal.id, productID);
-							similalrityObjects.add(wordSimilartyThread.call());
+							System.err.println(
+									"signalPhrase.alternate " + signalPhrase.alternate + " >>>>>>>>>>>>>>>> " + decode);
+							WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(
+									signalPhrase.alternate.toLowerCase().trim(), decode.toLowerCase().trim(), wkt,
+									stopWords, negativeWords, analysisSignal.id, productID);
+							boolean isAdd = true;
+							SimilalrityObject similalrityObject = wordSimilartyThread.call();
+							for (SimilalrityObject so : similalrityObjects) {
+								if ((so.signalId.intValue() == similalrityObject.signalId.intValue())
+										&& (so.score.doubleValue() == similalrityObject.score.doubleValue())) {
+									isAdd = false;
+								}
+							}
+							if(similalrityObject.getTypeOfMatch().equalsIgnoreCase("ANTONYM")){
+								double score=similalrityObject.getScore();
+								similalrityObject.setScore(1-score);
+							}
+							if (isAdd) {
+								similalrityObjects.add(similalrityObject);
+							}
 						}
 					} catch (Exception e) {
 					}
@@ -160,8 +196,8 @@ public class WordSimilarityServlet extends HttpServlet {
 			}
 		} else {
 			try {
-				WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(signal.toLowerCase().trim(), decode.toLowerCase().trim(), wkt, stopWords,
-						negativeWords,-1, productID);
+				WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(signal.toLowerCase().trim(),
+						decode.toLowerCase().trim(), wkt, stopWords, negativeWords, -1, productID);
 				similalrityObjects.add(wordSimilartyThread.call());
 			} catch (Exception e) {
 			}
@@ -171,10 +207,10 @@ public class WordSimilarityServlet extends HttpServlet {
 	}
 
 	public static void main(String[] args) throws Exception {
-		ArrayList<SignalPhrase> synonyms=new ArrayList<SignalPhrase>();
+		ArrayList<SignalPhrase> synonyms = new ArrayList<SignalPhrase>();
 		String signal = "पंजाबी पराठा";
-		WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(signal.toLowerCase().trim(), signal, wkt, stopWords,
-				negativeWords,-1, 434);
+		WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(signal.toLowerCase().trim(), signal, wkt,
+				stopWords, negativeWords, -1, 434);
 		System.err.println(wordSimilartyThread.call().getScore());
 	}
 
@@ -388,7 +424,7 @@ public class WordSimilarityServlet extends HttpServlet {
 		for (String string : items) {
 			for (String string2 : items2) {
 				if (string2.equalsIgnoreCase(string)) {
-					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.DATA_MUSE.name(), 1d,-1);
+					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.DATA_MUSE.name(), 1d, -1);
 				}
 			}
 		}

@@ -2,6 +2,7 @@ package edu.uniba.di.lacam.kdde.ws4j.servlet;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -11,6 +12,7 @@ import de.tudarmstadt.ukp.jwktl.api.IWiktionaryEntry;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryPage;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryRelation;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionarySense;
+import de.tudarmstadt.ukp.jwktl.api.RelationType;
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.SentenceUtils;
 import edu.stanford.nlp.ling.TaggedWord;
@@ -45,41 +47,39 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 			return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.EXACT_MATCH.name(), 1d, signalId);
 		}
 
-		if (conversationBlock.toLowerCase().contains(signal.toLowerCase())) {
-			String conversions[] = conversationBlock.split(" ");
-			for (String conv : conversions) {
-				if (conv.equalsIgnoreCase(signal)) {
-					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.CONTAINS.name(), 1d,
-							signalId);
-				}
-			}
+		String[] convSplited = conversationBlock.split("\\b+");
+		Arrays.parallelSetAll(convSplited, (i) -> convSplited[i].trim());
+		 
+		String tempConv = "";
+		for (String s : convSplited) {
+			if(s.length()>0)
+				tempConv=tempConv+s+" ";
 		}
-		/*-	String tempSignal = signal.toLowerCase();
-			tempSignal = tempSignal.replace(".", "").replace(",", "").replace("?", "");
-			tempSignal = " " + tempSignal + " ";
-			String tempConversation = conversationBlock.toLowerCase();
-			tempConversation = tempConversation.replace(".", "").replace(",", "").replace("?", "");
-			if (tempConversation.toLowerCase().contains(tempSignal)) {
-				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.CONTAINS.name(), 1d, signalId);
-		
-			}*/
-		String[] splitedConv = conversationBlock.split("\\b+");
-		String[] splitedSignal= signal.split("\\b+");
-		int counter=0;
-		for (String conv : splitedConv) {
-			
-			if (signal.toLowerCase().contains(conv)) {
-				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.CONTAINS.name(), 1d, signalId);
-			}
+
+		String[] singalSplited = signal.split("\\b+");
+		Arrays.parallelSetAll(singalSplited, (i) -> singalSplited[i].trim());
+ 		String tempSignal = "";
+		for (String s : singalSplited) {
+			if(s.length()>0)
+				tempSignal=tempSignal+s+" ";
+		}
+
+		if (tempConv.toLowerCase().contains(tempSignal)) {
+			return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.CONTAINS.name(), 1d, signalId);
 		}
 
 		if (productID != null) {
 			for (AnalysisSignal signal : SignalHolder.products.get(productID).signals) {
 				if (signal.id == signalId) {
 					for (SignalPhrase phrase : signal.synonyms) {
-						String tempPhrase = " " + phrase.alternate.toLowerCase() + " ";
-						String tempConversationBlock = " " + conversationBlock.toLowerCase() + " ";
-						if (tempConversationBlock.contains(tempPhrase)) {
+						String[] phraseSplited = phrase.alternate.split("\\b+");
+						Arrays.parallelSetAll(phraseSplited, (i) -> phraseSplited[i].trim());
+ 						String tempPhrase = "";
+						for (String s : phraseSplited) {
+							if(s.length()>0)
+								tempPhrase=tempPhrase+s+" ";
+						}
+						if (tempConv.contains(tempPhrase)) {
 							return new SimilalrityObject(signal.word, conversationBlock, true, phrase.type.name(), 1d,
 									signalId);
 						}
@@ -97,13 +97,31 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 								try {
 									String synonym = word.getTarget();
 									SignalPhrase phrase = new SignalPhrase(synonym, word.getRelationType());
-									String tempPhrase = " " + phrase.alternate.toLowerCase() + " ";
-									String tempConversationBlock = " " + conversationBlock.toLowerCase() + " ";
-
-									if (tempConversationBlock.contains(tempPhrase)) {
-										return new SimilalrityObject(signal, conversationBlock, true,
-												phrase.type.name(), 1d, signalId);
+									String[] phraseSplited = phrase.alternate.split("\\b+");
+									Arrays.parallelSetAll(phraseSplited, (i) -> phraseSplited[i].trim());
+ 									String tempPhrase = "";
+									for (String s : phraseSplited) {
+										if(s.length()>0)
+											tempPhrase=tempPhrase+s+" ";
 									}
+									if (tempConv.contains(tempPhrase)) {
+										if ((word.getRelationType().name()
+														.equalsIgnoreCase(RelationType.CHARACTERISTIC_WORD_COMBINATION.name()))
+												|| (word.getRelationType().name().equalsIgnoreCase(RelationType.HOLONYM.name()))
+												|| (word.getRelationType().name()
+														.equalsIgnoreCase(RelationType.HYPERNYM.name()))
+												|| (word.getRelationType().name().equalsIgnoreCase(RelationType.MERONYM.name()))
+												|| (word.getRelationType().name().equalsIgnoreCase(RelationType.SYNONYM.name()))
+												|| (word.getRelationType().name()
+														.equalsIgnoreCase(RelationType.TROPONYM.name()))) {
+											return new SimilalrityObject(signal, conversationBlock, true, phrase.type.name(), 1d,
+													signalId);
+										}else if(word.getRelationType().name().equalsIgnoreCase(RelationType.ANTONYM.name())) {
+											return new SimilalrityObject(signal, conversationBlock, true, phrase.type.name(), 0d,
+													signalId);
+										}
+									}
+									 
 								} catch (Exception e) {
 									// TODO Auto-generated catch block
 									// e.printStackTrace();
