@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryEdition;
+import de.tudarmstadt.ukp.jwktl.api.IWiktionaryEntry;
+import de.tudarmstadt.ukp.jwktl.api.IWiktionaryPage;
+import de.tudarmstadt.ukp.jwktl.api.IWiktionaryRelation;
+import de.tudarmstadt.ukp.jwktl.api.IWiktionarySense;
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.SentenceUtils;
 import edu.stanford.nlp.ling.TaggedWord;
@@ -50,26 +54,65 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 				}
 			}
 		}
-		String tempSignal = signal.toLowerCase();
-		tempSignal = tempSignal.replace(".", "").replace(",", "").replace("?", "");
-		tempSignal = " " + tempSignal + " ";
-		String tempConversation = conversationBlock.toLowerCase();
-		tempConversation = tempConversation.replace(".", "").replace(",", "").replace("?", "");
-		if (tempConversation.toLowerCase().contains(tempSignal)) {
-			return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.CONTAINS.name(), 1d, signalId);
-
+		/*-	String tempSignal = signal.toLowerCase();
+			tempSignal = tempSignal.replace(".", "").replace(",", "").replace("?", "");
+			tempSignal = " " + tempSignal + " ";
+			String tempConversation = conversationBlock.toLowerCase();
+			tempConversation = tempConversation.replace(".", "").replace(",", "").replace("?", "");
+			if (tempConversation.toLowerCase().contains(tempSignal)) {
+				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.CONTAINS.name(), 1d, signalId);
+		
+			}*/
+		String[] splitedConv = conversationBlock.split("\\b+");
+		String[] splitedSignal= signal.split("\\b+");
+		int counter=0;
+		for (String conv : splitedConv) {
+			
+			if (signal.toLowerCase().contains(conv)) {
+				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.CONTAINS.name(), 1d, signalId);
+			}
 		}
 
-		// IWiktionaryPage page = wkt.getPageForWord(signal);
-		for (AnalysisSignal signal : SignalHolder.products.get(productID).signals) {
-			if (signal.id == signalId) {
-				for (SignalPhrase phrase : signal.synonyms) {
-					String tempPhrase=" "+phrase.alternate.toLowerCase()+" ";
-					String tempConversationBlock=" "+conversationBlock.toLowerCase()+" ";
-					if (tempConversationBlock.contains(tempPhrase)) {
-						return new SimilalrityObject(signal.word, conversationBlock, true, phrase.type.name(), 1d,
-								signalId);
+		if (productID != null) {
+			for (AnalysisSignal signal : SignalHolder.products.get(productID).signals) {
+				if (signal.id == signalId) {
+					for (SignalPhrase phrase : signal.synonyms) {
+						String tempPhrase = " " + phrase.alternate.toLowerCase() + " ";
+						String tempConversationBlock = " " + conversationBlock.toLowerCase() + " ";
+						if (tempConversationBlock.contains(tempPhrase)) {
+							return new SimilalrityObject(signal.word, conversationBlock, true, phrase.type.name(), 1d,
+									signalId);
+						}
 					}
+				}
+
+			}
+		} else {
+			for (IWiktionaryPage page : WordSimilarityServlet.wkt.getPagesForWord(signal, false)) {
+				try {
+
+					for (IWiktionaryEntry entry : page.getEntries()) {
+						for (IWiktionarySense sense : entry.getSenses()) {
+							for (IWiktionaryRelation word : sense.getRelations()) {
+								try {
+									String synonym = word.getTarget();
+									SignalPhrase phrase = new SignalPhrase(synonym, word.getRelationType());
+									String tempPhrase = " " + phrase.alternate.toLowerCase() + " ";
+									String tempConversationBlock = " " + conversationBlock.toLowerCase() + " ";
+
+									if (tempConversationBlock.contains(tempPhrase)) {
+										return new SimilalrityObject(signal, conversationBlock, true,
+												phrase.type.name(), 1d, signalId);
+									}
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									// e.printStackTrace();
+								}
+
+							}
+						}
+					}
+				} catch (Exception e) {
 				}
 			}
 
