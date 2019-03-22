@@ -1,11 +1,16 @@
 package edu.uniba.di.lacam.kdde.ws4j.servlet;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
+
+import org.json.JSONObject;
+
+import com.google.gson.JsonObject;
 
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryEdition;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryEntry;
@@ -17,6 +22,11 @@ import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.SentenceUtils;
 import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class WordSimilartyThread implements Callable<SimilalrityObject> {
 	private String signal;
@@ -49,19 +59,19 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 
 		String[] convSplited = conversationBlock.split("\\b+");
 		Arrays.parallelSetAll(convSplited, (i) -> convSplited[i].trim());
-		 
+
 		String tempConv = "";
 		for (String s : convSplited) {
-			if(s.length()>0)
-				tempConv=tempConv+s+" ";
+			if (s.length() > 0)
+				tempConv = tempConv + s + " ";
 		}
 
 		String[] singalSplited = signal.split("\\b+");
 		Arrays.parallelSetAll(singalSplited, (i) -> singalSplited[i].trim());
- 		String tempSignal = "";
+		String tempSignal = "";
 		for (String s : singalSplited) {
-			if(s.length()>0)
-				tempSignal=tempSignal+s+" ";
+			if (s.length() > 0)
+				tempSignal = tempSignal + s + " ";
 		}
 
 		if (tempConv.toLowerCase().contains(tempSignal)) {
@@ -74,10 +84,10 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 					for (SignalPhrase phrase : signal.synonyms) {
 						String[] phraseSplited = phrase.alternate.split("\\b+");
 						Arrays.parallelSetAll(phraseSplited, (i) -> phraseSplited[i].trim());
- 						String tempPhrase = "";
+						String tempPhrase = "";
 						for (String s : phraseSplited) {
-							if(s.length()>0)
-								tempPhrase=tempPhrase+s+" ";
+							if (s.length() > 0)
+								tempPhrase = tempPhrase + s + " ";
 						}
 						if (tempConv.contains(tempPhrase)) {
 							return new SimilalrityObject(signal.word, conversationBlock, true, phrase.type.name(), 1d,
@@ -99,29 +109,33 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 									SignalPhrase phrase = new SignalPhrase(synonym, word.getRelationType());
 									String[] phraseSplited = phrase.alternate.split("\\b+");
 									Arrays.parallelSetAll(phraseSplited, (i) -> phraseSplited[i].trim());
- 									String tempPhrase = "";
+									String tempPhrase = "";
 									for (String s : phraseSplited) {
-										if(s.length()>0)
-											tempPhrase=tempPhrase+s+" ";
+										if (s.length() > 0)
+											tempPhrase = tempPhrase + s + " ";
 									}
 									if (tempConv.contains(tempPhrase)) {
 										if ((word.getRelationType().name()
-														.equalsIgnoreCase(RelationType.CHARACTERISTIC_WORD_COMBINATION.name()))
-												|| (word.getRelationType().name().equalsIgnoreCase(RelationType.HOLONYM.name()))
+												.equalsIgnoreCase(RelationType.CHARACTERISTIC_WORD_COMBINATION.name()))
+												|| (word.getRelationType().name()
+														.equalsIgnoreCase(RelationType.HOLONYM.name()))
 												|| (word.getRelationType().name()
 														.equalsIgnoreCase(RelationType.HYPERNYM.name()))
-												|| (word.getRelationType().name().equalsIgnoreCase(RelationType.MERONYM.name()))
-												|| (word.getRelationType().name().equalsIgnoreCase(RelationType.SYNONYM.name()))
+												|| (word.getRelationType().name()
+														.equalsIgnoreCase(RelationType.MERONYM.name()))
+												|| (word.getRelationType().name()
+														.equalsIgnoreCase(RelationType.SYNONYM.name()))
 												|| (word.getRelationType().name()
 														.equalsIgnoreCase(RelationType.TROPONYM.name()))) {
-											return new SimilalrityObject(signal, conversationBlock, true, phrase.type.name(), 1d,
-													signalId);
-										}else if(word.getRelationType().name().equalsIgnoreCase(RelationType.ANTONYM.name())) {
-											return new SimilalrityObject(signal, conversationBlock, true, phrase.type.name(), 0d,
-													signalId);
+											return new SimilalrityObject(signal, conversationBlock, true,
+													phrase.type.name(), 1d, signalId);
+										} else if (word.getRelationType().name()
+												.equalsIgnoreCase(RelationType.ANTONYM.name())) {
+											return new SimilalrityObject(signal, conversationBlock, true,
+													phrase.type.name(), 0d, signalId);
 										}
 									}
-									 
+
 								} catch (Exception e) {
 									// TODO Auto-generated catch block
 									// e.printStackTrace();
@@ -263,37 +277,61 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 	}
 
 	private static double sentanceSimilarity(String sentance1, String sentance2) {
-		long t = System.currentTimeMillis();
+		/*
+		 * long t = System.currentTimeMillis();
+		 * 
+		 * float score = 0.0f; double average = 0;
+		 * 
+		 * System.out.println(WordSimilarityServlet.rcs[0].getClass().getName() + "\t");
+		 * String[] words1 = sentance1.split(" "); String[] words2 =
+		 * sentance2.split(" "); double[][] k =
+		 * WordSimilarityServlet.rcs[0].getSimilarityMatrix(words1, words2);
+		 * 
+		 * double totalScore = 0;
+		 * 
+		 * for (int i = 0; i < k.length; i++) { // double[] maxValue = new
+		 * double[k.length]; double maxValue = 0;
+		 * 
+		 * for (int j = 0; j < k[i].length; j++) { System.out.println(k[i][j] + " ---- "
+		 * + words1[i] + " >>>>>> " + words2[j]); if (k[i][j] > maxValue) { maxValue =
+		 * k[i][j]; } } totalScore += maxValue; } //
+		 * System.out.println("sentance1.length() "+words1.length); average = (double)
+		 * totalScore / (double) words1.length; System.out.println("totalScore " +
+		 * totalScore); System.out.println("average " + average);
+		 * 
+		 * System.out.println("\nDone in " + (System.currentTimeMillis() - t) +
+		 * " msec.");
+		 */
 
-		float score = 0.0f;
-		double average = 0;
+		OkHttpClient client = new OkHttpClient();
 
-		System.out.println(WordSimilarityServlet.rcs[0].getClass().getName() + "\t");
-		String[] words1 = sentance1.split(" ");
-		String[] words2 = sentance2.split(" ");
-		double[][] k = WordSimilarityServlet.rcs[0].getSimilarityMatrix(words1, words2);
+		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
+		RequestBody body = RequestBody.create(mediaType, "sentence1=sentence1&sentence2=sentence1");
+		Request request = new Request.Builder().url("http://db.talentify.in:5010/").post(body)
+				.addHeader("content-type", "application/x-www-form-urlencoded").addHeader("cache-control", "no-cache")
+				.addHeader("postman-token", "c0f3ec5d-3af4-8efb-677d-396e26d44d49").build();
 
-		double totalScore = 0;
-
-		for (int i = 0; i < k.length; i++) {
-			// double[] maxValue = new double[k.length];
-			double maxValue = 0;
-
-			for (int j = 0; j < k[i].length; j++) {
-				System.out.println(k[i][j] + " ---- " + words1[i] + " >>>>>> " + words2[j]);
-				if (k[i][j] > maxValue) {
-					maxValue = k[i][j];
-				}
-			}
-			totalScore += maxValue;
+		Response response = null;
+		try {
+			response = client.newCall(request).execute();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-		// System.out.println("sentance1.length() "+words1.length);
-		average = (double) totalScore / (double) words1.length;
-		System.out.println("totalScore " + totalScore);
-		System.out.println("average " + average);
 
-		System.out.println("\nDone in " + (System.currentTimeMillis() - t) + " msec.");
-		return average;
+		String result = null;
+		try {
+			result = response.body().string();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		float res=0.0f;
+		JSONObject jsonObject = new JSONObject(result);
+		if (jsonObject.has("similarityScore")) {
+			String similarityScore =jsonObject.getString("similarityScore");
+			res =Float.parseFloat(similarityScore);
+		}
+		return res;
 
 	}
 
