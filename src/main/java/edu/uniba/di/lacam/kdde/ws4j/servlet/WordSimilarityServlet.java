@@ -61,11 +61,13 @@ public class WordSimilarityServlet extends HttpServlet {
 	public WordSimilarityServlet() {
 		super();
 		// TODO Auto-generated constructor stub
+		
+
 	}
 
 	public static RelatednessCalculator[] rcs;
 	private static IRAMDictionary dict = new MITWordNet().getDictionary();
-	private static File wiktionaryDirectory = new File("/var/TARGET_DIRECTORY");
+	private static File wiktionaryDirectory = new File("/var/TARGET_DIRECTORY");;
 	public static IWiktionaryEdition wkt = JWKTL.openEdition(wiktionaryDirectory);
 	public static ArrayList<String> stopWords = new ArrayList<String>();
 	public static ArrayList<String> negativeWords = new ArrayList<String>();

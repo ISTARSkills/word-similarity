@@ -196,29 +196,29 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 
 		System.out.println("No Entry found in wictionary for " + signal);
 		value = sentanceSimilarity(signal.trim().toLowerCase(), conversationBlock.trim().toLowerCase());
-		if (value >= 0.90) {
+		if (value >= 0.7) {
 
 			if ((isSignalNegative && isConversationNegative)
 					&& (signal.contains("?") && conversationBlock.contains("?"))) {
-				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
+				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(),
 						value, signalId);
 			} else if ((!isSignalNegative && !isConversationNegative)
 					&& (!signal.contains("?") && !conversationBlock.contains("?"))) {
-				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
+				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(),
 						value, signalId);
 			}
 			if ((isSignalNegative && isConversationNegative)
 					&& (!signal.contains("?") && !conversationBlock.contains("?"))) {
-				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
+				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(),
 						value, signalId);
 			} else if ((!isSignalNegative && !isConversationNegative)
 					&& (signal.contains("?") && conversationBlock.contains("?"))) {
-				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
+				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(),
 						value, signalId);
 			} else {
 				value = (1 - value);
-				if (value >= 0.90) {
-					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SENTENCE_SIMILARITY.name(),
+				if (value >= 0.7) {
+					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(),
 							value, signalId);
 				}
 			}
@@ -306,8 +306,8 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 		OkHttpClient client = new OkHttpClient();
 
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-		RequestBody body = RequestBody.create(mediaType, "sentence1=sentence1&sentence2=sentence1");
-		Request request = new Request.Builder().url("http://db.talentify.in:5010/").post(body)
+		RequestBody body = RequestBody.create(mediaType, "sentence1="+sentance1+"&sentence2="+sentance2);
+		Request request = new Request.Builder().url("http://35.200.228.189:5010/").post(body)
 				.addHeader("content-type", "application/x-www-form-urlencoded").addHeader("cache-control", "no-cache")
 				.addHeader("postman-token", "c0f3ec5d-3af4-8efb-677d-396e26d44d49").build();
 
