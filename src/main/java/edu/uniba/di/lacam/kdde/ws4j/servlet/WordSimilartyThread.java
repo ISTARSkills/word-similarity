@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 
@@ -188,13 +189,13 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 			}
 		}
 
-		boolean resstanford = stanfordSimilarity(signal, conversationBlock);
-		if (resstanford) {
-			return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.STANFORD_SIMILARITY.name(), 1d,
-					signalId);
-		}
+		/*
+		 * boolean resstanford = stanfordSimilarity(signal, conversationBlock); if
+		 * (resstanford) { return new SimilalrityObject(signal, conversationBlock, true,
+		 * MatchTypes.STANFORD_SIMILARITY.name(), 1d, signalId); }
+		 */
 
-		System.out.println("No Entry found in wictionary for " + signal);
+
 		value = sentanceSimilarity(signal.trim().toLowerCase(), conversationBlock.trim().toLowerCase());
 		if (value >= 0.7) {
 
@@ -303,11 +304,15 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 		 * " msec.");
 		 */
 
-		OkHttpClient client = new OkHttpClient();
+		OkHttpClient client = new OkHttpClient.Builder()
+		        .connectTimeout(10, TimeUnit.SECONDS)
+		        .writeTimeout(10, TimeUnit.SECONDS)
+		        .readTimeout(30, TimeUnit.SECONDS)
+		        .build();
 
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
 		RequestBody body = RequestBody.create(mediaType, "sentence1="+sentance1+"&sentence2="+sentance2);
-		Request request = new Request.Builder().url("http://35.200.228.189:5010/").post(body)
+		Request request = new Request.Builder().url("http://127.0.0.1:5010").post(body)
 				.addHeader("content-type", "application/x-www-form-urlencoded").addHeader("cache-control", "no-cache")
 				.addHeader("postman-token", "c0f3ec5d-3af4-8efb-677d-396e26d44d49").build();
 

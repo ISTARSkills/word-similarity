@@ -140,8 +140,7 @@ public class WordSimilarityServlet extends HttpServlet {
 
 			for (AnalysisSignal analysisSignal : signals) {
 				try {
-					System.err.println("analysisSignal.word " + analysisSignal.word + " >>>>>>>>>>>>>>>> " + decode
-							+ " >>>>>>> " + analysisSignal.id);
+					
 					WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(
 							analysisSignal.word.toLowerCase().trim(), decode.toLowerCase().trim(), wkt, stopWords,
 							negativeWords, analysisSignal.id, productID);
@@ -170,8 +169,7 @@ public class WordSimilarityServlet extends HttpServlet {
 					// SYNONYM
 					try {
 						if (signalPhrase.type.name().equalsIgnoreCase("SYNONYM")) {
-							System.err.println(
-									"signalPhrase.alternate " + signalPhrase.alternate + " >>>>>>>>>>>>>>>> " + decode);
+							
 							WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(
 									signalPhrase.alternate.toLowerCase().trim(), decode.toLowerCase().trim(), wkt,
 									stopWords, negativeWords, analysisSignal.id, productID);
@@ -453,7 +451,6 @@ public class WordSimilarityServlet extends HttpServlet {
 			double maxValue = 0;
 
 			for (int j = 0; j < k[i].length; j++) {
-				System.out.println(k[i][j] + " ---- " + words1[i] + " >>>>>> " + words2[j]);
 				if (k[i][j] > maxValue) {
 					maxValue = k[i][j];
 				}
