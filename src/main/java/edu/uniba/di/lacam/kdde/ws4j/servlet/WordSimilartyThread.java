@@ -196,6 +196,7 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 		 */
 
 
+		if(conversationBlock.split(" ").length > 2) {
 		value = sentanceSimilarity(signal.trim().toLowerCase(), conversationBlock.trim().toLowerCase());
 		if (value >= 0.7) {
 
@@ -227,6 +228,7 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 			// check word by word contains
 
 			// check noun and verb conatins
+		}
 		}
 
 		return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.NO_MATCH.name(), value, signalId);
