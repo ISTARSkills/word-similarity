@@ -13,13 +13,13 @@
         <signalvalue id="4" type_of_match="EXACT" value="$$BRAND_NAME$$"/>
     </signlaHolders>
     
-     <signlaHolders color="#0101DF" id="3">
+  <!--    <signlaHolders color="#0101DF" id="3">
         <key>EMPATHY</key>
         <signalvalue id="5" type_of_match="PATTERN_SET_EXACT" value="{I,it}	{understand,feel,see,get,realize}"/>
-    </signlaHolders>
+    </signlaHolders> -->
     
      <signlaHolders color="#0101DF" id="4">
         <key>POLITENESS</key>
-        <signalvalue id="6" type_of_match="PATTERN_SET_EXACT" value="{Am I speaking with,Is this a good time?,Do you have a couple of minutes,spare a few minutes,apologize,sorry,so sorry to hear that,regret the inconvenience, certainly try,try my best,do our best,help resolve,I understand that}"/>
+        <signalvalue id="6" type_of_match="PATTERN_SET_EXACT" value="Am I speaking with,Is this a good time?,Do you have a couple of minutes,spare a few minutes,apologize,sorry,so sorry to hear that,regret the inconvenience, certainly try,try my best,do our best,help resolve,I understand that"/>
     </signlaHolders>
 </SignalConfigHolder>

@@ -30,7 +30,7 @@ public class MatchingEngine {
 			JAXBContext jaxbContext = JAXBContext.newInstance(SignalConfigHolder.class);
 			Unmarshaller jaxbUnmarshaller;
 			jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			signalHolderCollection= (SignalConfigHolder) jaxbUnmarshaller.unmarshal(stream);
+			signalHolderCollection = (SignalConfigHolder) jaxbUnmarshaller.unmarshal(stream);
 
 			System.out.println(signalHolderCollection.signlaHolders.size());
 		} catch (JAXBException e) {
@@ -41,26 +41,26 @@ public class MatchingEngine {
 	}
 
 	public SimilalrityObject match(String text) throws JAXBException {
-		
+
 		for (SignalType signalHolder : signalHolderCollection.signlaHolders) {
 			for (SignalValue signalType : signalHolder.getSignalvalue()) {
 				SimilalrityObject so = SignalMatchFactory.buildSignalMatch(signalType.getType_of_match()).patternMatch(text);
-				
-				if(so!=null) {
-				System.out.println(so.getScore()+" -- "+so.getTypeOfMatch()+" -- "+so.getSignal());
+				if (so != null) {
+					System.out.println(so.getScore() + " -- " + so.getTypeOfMatch() + " -- " + so.getSignal());
+					return so;
 				}
 			}
 		}
 		return null;
 
 	}
-	
-	public static void main(String[] args ) {
+
+	public static void main(String[] args) {
 		System.err.println("Wow");
-		MatchingEngine matchingEngine=new MatchingEngine();
+		MatchingEngine matchingEngine = new MatchingEngine();
 		try {
-			 matchingEngine.match("Good evening");
- 		} catch (JAXBException e) {
+			matchingEngine.match("Am I speaking with");
+		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
