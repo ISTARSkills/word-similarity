@@ -38,8 +38,7 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 	private Integer signalId;
 	private Integer productID;
 
-	public WordSimilartyThread(String signal, String conversationBlock, IWiktionaryEdition wkt,
-			ArrayList<String> stopWords, ArrayList<String> negativeWords, Integer signalId, Integer productID) {
+	public WordSimilartyThread(String signal, String conversationBlock, IWiktionaryEdition wkt, ArrayList<String> stopWords, ArrayList<String> negativeWords, Integer signalId, Integer productID) {
 		super();
 		this.signal = signal;
 		this.conversationBlock = conversationBlock;
@@ -91,8 +90,7 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 								tempPhrase = tempPhrase + s + " ";
 						}
 						if (tempConv.contains(tempPhrase)) {
-							return new SimilalrityObject(signal.word, conversationBlock, true, phrase.type.name(), 1d,
-									signalId);
+							return new SimilalrityObject(signal.word, conversationBlock, true, phrase.type.name(), 1d, signalId);
 						}
 					}
 				}
@@ -116,24 +114,11 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 											tempPhrase = tempPhrase + s + " ";
 									}
 									if (tempConv.contains(tempPhrase)) {
-										if ((word.getRelationType().name()
-												.equalsIgnoreCase(RelationType.CHARACTERISTIC_WORD_COMBINATION.name()))
-												|| (word.getRelationType().name()
-														.equalsIgnoreCase(RelationType.HOLONYM.name()))
-												|| (word.getRelationType().name()
-														.equalsIgnoreCase(RelationType.HYPERNYM.name()))
-												|| (word.getRelationType().name()
-														.equalsIgnoreCase(RelationType.MERONYM.name()))
-												|| (word.getRelationType().name()
-														.equalsIgnoreCase(RelationType.SYNONYM.name()))
-												|| (word.getRelationType().name()
-														.equalsIgnoreCase(RelationType.TROPONYM.name()))) {
-											return new SimilalrityObject(signal, conversationBlock, true,
-													phrase.type.name(), 1d, signalId);
-										} else if (word.getRelationType().name()
-												.equalsIgnoreCase(RelationType.ANTONYM.name())) {
-											return new SimilalrityObject(signal, conversationBlock, true,
-													phrase.type.name(), 0d, signalId);
+										if ((word.getRelationType().name().equalsIgnoreCase(RelationType.CHARACTERISTIC_WORD_COMBINATION.name())) || (word.getRelationType().name().equalsIgnoreCase(RelationType.HOLONYM.name())) || (word.getRelationType().name().equalsIgnoreCase(RelationType.HYPERNYM.name())) || (word.getRelationType().name().equalsIgnoreCase(RelationType.MERONYM.name())) || (word.getRelationType().name().equalsIgnoreCase(RelationType.SYNONYM.name()))
+												|| (word.getRelationType().name().equalsIgnoreCase(RelationType.TROPONYM.name()))) {
+											return new SimilalrityObject(signal, conversationBlock, true, phrase.type.name(), 1d, signalId);
+										} else if (word.getRelationType().name().equalsIgnoreCase(RelationType.ANTONYM.name())) {
+											return new SimilalrityObject(signal, conversationBlock, true, phrase.type.name(), 0d, signalId);
 										}
 									}
 
@@ -179,13 +164,11 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 		for (String word : alertnateSignals) {
 			System.out.println("SYNONYM_SENTENCE_ALTERNATE " + word);
 			if (word.equalsIgnoreCase(conversationBlock)) {
-				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SYNONYM_SENTENCE_EXACT.name(),
-						1d, signalId);
+				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SYNONYM_SENTENCE_EXACT.name(), 1d, signalId);
 			}
 
 			if (conversationBlock.toLowerCase().contains(word)) {
-				return new SimilalrityObject(signal, conversationBlock, true,
-						MatchTypes.SYNONYM_SENTENCE_CONTAINS.name(), 1d, signalId);
+				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.SYNONYM_SENTENCE_CONTAINS.name(), 1d, signalId);
 			}
 		}
 
@@ -195,43 +178,44 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 		 * MatchTypes.STANFORD_SIMILARITY.name(), 1d, signalId); }
 		 */
 
+		if (conversationBlock.split(" ").length >= 2) {
+			conversationBlock=	conversationBlock.replaceAll("\\?","");
+			signal=signal.replaceAll("\\?","");
+			value = sentanceSimilarity(signal.trim().toLowerCase(), conversationBlock.trim().toLowerCase());
+			
+ 			if (value >= 0.7) {
 
-		if(conversationBlock.split(" ").length > 2) {
-		value = sentanceSimilarity(signal.trim().toLowerCase(), conversationBlock.trim().toLowerCase());
-		if (value >= 0.7) {
-
-			if ((isSignalNegative && isConversationNegative)
-					&& (signal.contains("?") && conversationBlock.contains("?"))) {
-				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(),
-						value, signalId);
-			} else if ((!isSignalNegative && !isConversationNegative)
-					&& (!signal.contains("?") && !conversationBlock.contains("?"))) {
-				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(),
-						value, signalId);
-			}
-			if ((isSignalNegative && isConversationNegative)
-					&& (!signal.contains("?") && !conversationBlock.contains("?"))) {
-				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(),
-						value, signalId);
-			} else if ((!isSignalNegative && !isConversationNegative)
-					&& (signal.contains("?") && conversationBlock.contains("?"))) {
-				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(),
-						value, signalId);
-			} else {
-				value = (1 - value);
-				if (value >= 0.7) {
-					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(),
-							value, signalId);
+				if ((isSignalNegative && isConversationNegative) && (signal.contains("?") && conversationBlock.contains("?"))) {
+					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(), value, signalId);
+				} else if ((!isSignalNegative && !isConversationNegative) && (!signal.contains("?") && !conversationBlock.contains("?"))) {
+					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(), value, signalId);
 				}
+				if ((isSignalNegative && isConversationNegative) && (!signal.contains("?") && !conversationBlock.contains("?"))) {
+					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(), value, signalId);
+				} else if ((!isSignalNegative && !isConversationNegative) && (signal.contains("?") && conversationBlock.contains("?"))) {
+					return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(), value, signalId);
+				} else {
+					value = (1 - value);
+					if (value >= 0.5) {
+						return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.GOOGLE_SIMILARIYY.name(), value, signalId);
+					}
+				}
+			} else {
+				/*
+				 * boolean isMatch = false; isMatch = stanfordSimilarity(signal,
+				 * conversationBlock); if (isMatch) { return new SimilalrityObject(signal,
+				 * conversationBlock, true, MatchTypes.STANFORD_SIMILARITY.name(), 1d,
+				 * signalId); } else { return new SimilalrityObject(signal, conversationBlock,
+				 * true, MatchTypes.NO_MATCH.name(), value, signalId); }
+				 */
+				
+				return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.NO_MATCH.name(), value, signalId);
+
 			}
-		} else {
-			// check word by word contains
-
-			// check noun and verb conatins
 		}
-		}
-
 		return new SimilalrityObject(signal, conversationBlock, true, MatchTypes.NO_MATCH.name(), value, signalId);
+	
+
 	}
 
 	private static boolean stanfordSimilarity(String signal, String conversationBlock) {
@@ -243,8 +227,7 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 			List<List<HasWord>> conversationSentence = MaxentTagger.tokenizeText(new StringReader(conversationBlock));
 
 			HashMap<String, ArrayList<String>> signalMap = generateSentanceMap(WordSimilarityServlet.tagger, sentences);
-			HashMap<String, ArrayList<String>> convaerSationMap = generateSentanceMap(WordSimilarityServlet.tagger,
-					conversationSentence);
+			HashMap<String, ArrayList<String>> convaerSationMap = generateSentanceMap(WordSimilarityServlet.tagger, conversationSentence);
 
 			HashMap<String, String> tagMap = new HashMap<String, String>();
 
@@ -259,8 +242,7 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 				}
 			}
 			for (String pos : tagMap.keySet()) {
-				if (pos.startsWith("FW") || pos.startsWith("CD") || pos.startsWith("NN") || pos.startsWith("VB")
-						|| pos.startsWith(".")) {
+				if (pos.startsWith("FW") || pos.startsWith("CD") || pos.startsWith("NN") || pos.startsWith("VB") || pos.startsWith(".")) {
 					if (signalMap.get(pos) != null && convaerSationMap.get(pos) != null) {
 						isMatch = matchList(signalMap.get(pos), convaerSationMap.get(pos));
 					} else {
@@ -306,17 +288,11 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 		 * " msec.");
 		 */
 
-		OkHttpClient client = new OkHttpClient.Builder()
-		        .connectTimeout(10, TimeUnit.SECONDS)
-		        .writeTimeout(10, TimeUnit.SECONDS)
-		        .readTimeout(30, TimeUnit.SECONDS)
-		        .build();
+		OkHttpClient client = new OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS).writeTimeout(10, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build();
 
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-		RequestBody body = RequestBody.create(mediaType, "sentence1="+sentance1+"&sentence2="+sentance2);
-		Request request = new Request.Builder().url("http://127.0.0.1:5010").post(body)
-				.addHeader("content-type", "application/x-www-form-urlencoded").addHeader("cache-control", "no-cache")
-				.addHeader("postman-token", "c0f3ec5d-3af4-8efb-677d-396e26d44d49").build();
+		RequestBody body = RequestBody.create(mediaType, "sentence1=" + sentance1 + "&sentence2=" + sentance2);
+		Request request = new Request.Builder().url("http://35.200.182.146:5010/sentence_similarity").post(body).addHeader("content-type", "application/x-www-form-urlencoded").addHeader("cache-control", "no-cache").addHeader("postman-token", "c0f3ec5d-3af4-8efb-677d-396e26d44d49").build();
 
 		Response response = null;
 		try {
@@ -332,11 +308,11 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		float res=0.0f;
+		float res = 0.0f;
 		JSONObject jsonObject = new JSONObject(result);
 		if (jsonObject.has("similarityScore")) {
-			String similarityScore =jsonObject.getString("similarityScore");
-			res =Float.parseFloat(similarityScore);
+			String similarityScore = jsonObject.getString("similarityScore");
+			res = Float.parseFloat(similarityScore);
 		}
 		return res;
 
@@ -372,8 +348,7 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 
 	}
 
-	private static HashMap<String, ArrayList<String>> generateSentanceMap(MaxentTagger tagger,
-			List<List<HasWord>> sentences) {
+	private static HashMap<String, ArrayList<String>> generateSentanceMap(MaxentTagger tagger, List<List<HasWord>> sentences) {
 		HashMap<String, ArrayList<String>> sentanceMap = new HashMap<String, ArrayList<String>>();
 
 		for (List<HasWord> sentence : sentences) {

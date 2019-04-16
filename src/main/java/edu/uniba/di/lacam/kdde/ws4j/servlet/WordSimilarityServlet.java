@@ -11,6 +11,9 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -54,6 +57,7 @@ import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 public class WordSimilarityServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	public static MaxentTagger tagger = null;
+	public static ExecutorService executorService = Executors.newFixedThreadPool(400);
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -144,7 +148,9 @@ public class WordSimilarityServlet extends HttpServlet {
 					WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(
 							analysisSignal.word.toLowerCase().trim(), decode.toLowerCase().trim(), wkt, stopWords,
 							negativeWords, analysisSignal.id, productID);
-					SimilalrityObject similalrityObject = wordSimilartyThread.call();
+					
+					Future<SimilalrityObject> future = executorService.submit(wordSimilartyThread);
+					SimilalrityObject similalrityObject = future.get();
 					
 					if(similalrityObject.getTypeOfMatch().equalsIgnoreCase("ANTONYM")){
 						double score=similalrityObject.getScore();
@@ -174,7 +180,8 @@ public class WordSimilarityServlet extends HttpServlet {
 									signalPhrase.alternate.toLowerCase().trim(), decode.toLowerCase().trim(), wkt,
 									stopWords, negativeWords, analysisSignal.id, productID);
 							boolean isAdd = true;
-							SimilalrityObject similalrityObject = wordSimilartyThread.call();
+							Future<SimilalrityObject> future = executorService.submit(wordSimilartyThread);
+							SimilalrityObject similalrityObject = future.get();
 							for (SimilalrityObject so : similalrityObjects) {
 								if ((so.signalId.intValue() == similalrityObject.signalId.intValue())
 										&& (so.score.doubleValue() == similalrityObject.score.doubleValue())) {
@@ -199,6 +206,8 @@ public class WordSimilarityServlet extends HttpServlet {
 				WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(signal.toLowerCase().trim(),
 						decode.toLowerCase().trim(), wkt, stopWords, negativeWords, -1, productID);
 				similalrityObjects.add(wordSimilartyThread.call());
+				Future<SimilalrityObject> future = executorService.submit(wordSimilartyThread);
+				similalrityObjects.add(future.get());
 			} catch (Exception e) {
 			}
 		}
@@ -206,13 +215,7 @@ public class WordSimilarityServlet extends HttpServlet {
 
 	}
 
-	public static void main(String[] args) throws Exception {
-		ArrayList<SignalPhrase> synonyms = new ArrayList<SignalPhrase>();
-		String signal = "पंजाबी पराठा";
-		WordSimilartyThread wordSimilartyThread = new WordSimilartyThread(signal.toLowerCase().trim(), signal, wkt,
-				stopWords, negativeWords, -1, 434);
-		System.err.println(wordSimilartyThread.call().getScore());
-	}
+
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
@@ -220,7 +223,6 @@ public class WordSimilarityServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 
