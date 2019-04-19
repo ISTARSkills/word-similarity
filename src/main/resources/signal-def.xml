@@ -1,25 +1,84 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <SignalConfigHolder>
 <!--  Genreric Signals  -->
-    <signlaHolders color="#0101DF" id="1"> 
+    <signlaHolders color="#0101DF" id="9999991"> 
         <key>Greetings</key>
         <signalvalue id="1" type_of_match="SEMANTIC" value="Hi"/>
         <signalvalue id="2" type_of_match="SEMANTIC" value="Good morning"/>
         <signalvalue id="3" type_of_match="SEMANTIC" value="Thanks"/>
      </signlaHolders>
     
-    <signlaHolders color="#0101DF" id="2">
+    <signlaHolders color="#008080" id="9999992">
         <key>Brand</key>
         <signalvalue id="4" type_of_match="EXACT" value="$$BRAND_NAME$$"/>
     </signlaHolders>
+    
+    
     
   <!--    <signlaHolders color="#0101DF" id="3">
         <key>EMPATHY</key>
         <signalvalue id="5" type_of_match="PATTERN_SET_EXACT" value="{I,it}	{understand,feel,see,get,realize}"/>
     </signlaHolders> -->
     
-     <signlaHolders color="#0101DF" id="4">
+     <signlaHolders color="#0101DF" id="9999993">
         <key>POLITENESS</key>
         <signalvalue id="6" type_of_match="PATTERN_SET_EXACT" value="Am I speaking with,Is this a good time?,Do you have a couple of minutes,spare a few minutes,apologize,sorry,so sorry to hear that,regret the inconvenience, certainly try,try my best,do our best,help resolve,I understand that"/>
     </signlaHolders>
+    
+     <signlaHolders color="#41b8be" id="9999994">
+        <key>Brand</key>
+        <signalvalue id="7" type_of_match="EXACT" value="$$PRODUCT_NAME$$"/>
+    </signlaHolders>
+    
+    
+    
+    <signlaHolders color="#008000	" id="9999995">
+        <key>Brand</key>
+        <signalvalue id="8" type_of_match="SEMANTIC" value="$$FOLLOW_UP$$"/>
+    </signlaHolders>
+    <signlaHolders color="#b01129" id="9999996">
+        <key>Brand</key>
+        <signalvalue id="9" type_of_match="SEMANTIC" value="$$FEATURE$$"/>
+    </signlaHolders>
+    <signlaHolders color="#f24f00" id="9999997">
+        <key>Brand</key>
+        <signalvalue id="10" type_of_match="SEMANTIC" value="$$KEY_SELLING_POINT$$"/>
+    </signlaHolders>
+    <signlaHolders color="#008080" id="9999998">
+        <key>Brand</key>
+        <signalvalue id="11" type_of_match="SEMANTIC" value="$$LEAD_VALIDATION$$"/>
+    </signlaHolders>
+     
+    <signlaHolders color="#712075" id="99999910">
+        <key>Brand</key>
+        <signalvalue id="13" type_of_match="SEMANTIC" value="$$OBJECTION$$"/>
+    </signlaHolders>
+    <signlaHolders color="#0441b1" id="99999911">
+        <key>Brand</key>
+        <signalvalue id="14" type_of_match="SEMANTIC" value="$$PAYMENT$$"/>
+    </signlaHolders>
+    <signlaHolders color="#e92459" id="99999912">
+        <key>Brand</key>
+        <signalvalue id="15" type_of_match="SEMANTIC" value="$$PLACEMENT$$"/>
+    </signlaHolders>
+    
+     <signlaHolders color="#808040" id="99999913">
+        <key>Brand</key>
+        <signalvalue id="16" type_of_match="SEMANTIC" value="$$PRICE$$"/>
+    </signlaHolders>
+      <signlaHolders color="#804040" id="99999914">
+        <key>Brand</key>
+        <signalvalue id="17" type_of_match="SEMANTIC" value="$$PROCESS$$"/>
+    </signlaHolders>
+    
+      <signlaHolders color="#800080" id="99999915">
+        <key>Brand</key>
+        <signalvalue id="18" type_of_match="SEMANTIC" value="$$QUERY$$"/>
+    </signlaHolders>
+    
+       <signlaHolders color="#b62eb1" id="99999916">
+        <key>Brand</key>
+        <signalvalue id="19" type_of_match="SEMANTIC" value="$$QUESTIONS$$"/>
+    </signlaHolders>
+    
 </SignalConfigHolder>

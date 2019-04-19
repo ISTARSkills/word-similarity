@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import com.google.gson.JsonObject;
 
+import ai.talentify.db.utils.DBProperties;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryEdition;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryEntry;
 import de.tudarmstadt.ukp.jwktl.api.IWiktionaryPage;
@@ -292,7 +293,7 @@ public class WordSimilartyThread implements Callable<SimilalrityObject> {
 
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
 		RequestBody body = RequestBody.create(mediaType, "sentence1=" + sentance1 + "&sentence2=" + sentance2);
-		Request request = new Request.Builder().url("http://35.200.182.146:5010/sentence_similarity").post(body).addHeader("content-type", "application/x-www-form-urlencoded").addHeader("cache-control", "no-cache").addHeader("postman-token", "c0f3ec5d-3af4-8efb-677d-396e26d44d49").build();
+		Request request = new Request.Builder().url(DBProperties.getProperty("EMOTION_ANALYZER_URL")+"sentence_similarity").post(body).addHeader("content-type", "application/x-www-form-urlencoded").addHeader("cache-control", "no-cache").addHeader("postman-token", "c0f3ec5d-3af4-8efb-677d-396e26d44d49").build();
 
 		Response response = null;
 		try {

@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 
+import ai.talentify.db.utils.DBProperties;
 import edu.uniba.di.lacam.kdde.ws4j.servlet.SimilalrityObject;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -15,16 +16,17 @@ import okhttp3.Response;
 public class SemanticSignal extends SignalMatch {
 
 	@Override
-	SimilalrityObject patternMatch(String conversationBlock) {
+	SimilalrityObject patternMatch(String conversationBlock,String orgId) {
+		SignalConfigHolder signalHolderCollection =MatchingEngine.signalHolderMap.get(orgId);
 
-		for (SignalType signalType : MatchingEngine.signalHolderCollection.signlaHolders) {
+		for (SignalType signalType : signalHolderCollection.signlaHolders) {
 			for (SignalValue signalValue : signalType.getSignalvalue()) {
 
 				if (signalValue.getType_of_match().name().equalsIgnoreCase(TypeOfMatch.SEMANTIC.name())) {
 
 					double value = sentanceSimilarity(signalValue.getValue().toLowerCase().trim(), conversationBlock.trim().toLowerCase());
 					if (value > 0.7) {
-						return new SimilalrityObject(signalType.getKey(), conversationBlock, true, TypeOfMatch.SEMANTIC.name(), value, signalValue.getId());
+						return new SimilalrityObject(signalType.getKey(), conversationBlock, true, TypeOfMatch.SEMANTIC.name(), value, signalType.getId(),signalType.getKey(), signalValue.getValue(),signalType.getColor());
 					}
 
 				}
@@ -40,7 +42,9 @@ public class SemanticSignal extends SignalMatch {
 
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
 		RequestBody body = RequestBody.create(mediaType, "sentence1=" + sentance1 + "&sentence2=" + sentance2);
-		Request request = new Request.Builder().url("http://35.200.182.146:5010/sentence_similarity").post(body).addHeader("content-type", "application/x-www-form-urlencoded").addHeader("cache-control", "no-cache").addHeader("postman-token", "c0f3ec5d-3af4-8efb-677d-396e26d44d49").build();
+		
+		System.out.println("Url >>>>>>> "+DBProperties.getProperty("EMOTION_ANALYZER_URL")+"sentence_similarity" + " >>>>> "+sentance1 +"  sentance2    "+sentance2);
+		Request request = new Request.Builder().url(DBProperties.getProperty("EMOTION_ANALYZER_URL")+"sentence_similarity").post(body).addHeader("content-type", "application/x-www-form-urlencoded").addHeader("cache-control", "no-cache").addHeader("postman-token", "c0f3ec5d-3af4-8efb-677d-396e26d44d49").build();
 
 		Response response = null;
 		try {
