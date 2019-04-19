@@ -1,6 +1,7 @@
 package ai.talentify.yinyang;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
@@ -17,16 +18,18 @@ public class SemanticSignal extends SignalMatch {
 
 	@Override
 	SimilalrityObject patternMatch(String conversationBlock,String orgId) {
-		SignalConfigHolder signalHolderCollection =MatchingEngine.signalHolderMap.get(orgId);
+		ArrayList<OrgSignal> orgSignals =MatchingEngine.orgSignalHolderMap.get(orgId);
 
-		for (SignalType signalType : signalHolderCollection.signlaHolders) {
-			for (SignalValue signalValue : signalType.getSignalvalue()) {
+		for (OrgSignal orgSignal : orgSignals) {
+			for (OrgSignalValue orgSignalValue : orgSignal.getSignalValues()) {
 
-				if (signalValue.getType_of_match().name().equalsIgnoreCase(TypeOfMatch.SEMANTIC.name())) {
+				if (orgSignalValue.getTypeOfMatch().equalsIgnoreCase(TypeOfMatch.SEMANTIC.name())) {
 
-					double value = sentanceSimilarity(signalValue.getValue().toLowerCase().trim(), conversationBlock.trim().toLowerCase());
+					double value = sentanceSimilarity(orgSignalValue.getValue().toLowerCase().trim(), conversationBlock.trim().toLowerCase());
 					if (value > 0.7) {
-						return new SimilalrityObject(signalType.getKey(), conversationBlock, true, TypeOfMatch.SEMANTIC.name(), value, signalType.getId(),signalType.getKey(), signalValue.getValue(),signalType.getColor());
+						return new SimilalrityObject(orgSignal.getName(), conversationBlock, true, TypeOfMatch.SEMANTIC.name(), value, orgSignal.getId(),
+								orgSignal.getName(), orgSignalValue.getValue(),orgSignal.getColor());
+						
 					}
 
 				}
@@ -43,7 +46,7 @@ public class SemanticSignal extends SignalMatch {
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
 		RequestBody body = RequestBody.create(mediaType, "sentence1=" + sentance1 + "&sentence2=" + sentance2);
 		
-		System.out.println("Url >>>>>>> "+DBProperties.getProperty("EMOTION_ANALYZER_URL")+"sentence_similarity" + " >>>>> "+sentance1 +"  sentance2    "+sentance2);
+		//System.out.println("Url >>>>>>> "+DBProperties.getProperty("EMOTION_ANALYZER_URL")+"sentence_similarity" + " >>>>> "+sentance1 +"  sentance2    "+sentance2);
 		Request request = new Request.Builder().url(DBProperties.getProperty("EMOTION_ANALYZER_URL")+"sentence_similarity").post(body).addHeader("content-type", "application/x-www-form-urlencoded").addHeader("cache-control", "no-cache").addHeader("postman-token", "c0f3ec5d-3af4-8efb-677d-396e26d44d49").build();
 
 		Response response = null;

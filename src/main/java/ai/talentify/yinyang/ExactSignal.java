@@ -1,20 +1,22 @@
 package ai.talentify.yinyang;
 
+import java.util.ArrayList;
+
 import edu.uniba.di.lacam.kdde.ws4j.servlet.SimilalrityObject;
 
 public class ExactSignal extends SignalMatch {
 
 	@Override
 	SimilalrityObject patternMatch(String conversationBlock,String orgId) {
-		SignalConfigHolder signalHolderCollection =MatchingEngine.signalHolderMap.get(orgId);
+		ArrayList<OrgSignal> orgSignals =MatchingEngine.orgSignalHolderMap.get(orgId);
  
-		for (SignalType signalType : signalHolderCollection.signlaHolders) {
-			for (SignalValue signalValue : signalType.getSignalvalue()) {
+		for (OrgSignal orgSignal : orgSignals) {
+			for (OrgSignalValue orgSignalValue : orgSignal.getSignalValues()) {
 
-				if (signalValue.getType_of_match().name().equalsIgnoreCase(TypeOfMatch.EXACT.name())) {
-					if (conversationBlock.toLowerCase().trim().contains(signalValue.getValue().toLowerCase().trim())) {
+				if (orgSignalValue.getTypeOfMatch().equalsIgnoreCase(TypeOfMatch.EXACT.name())) {
+					if (conversationBlock.toLowerCase().trim().contains(orgSignalValue.getValue().toLowerCase().trim())) {
 						//return new SimilalrityObject(signalType.getKey(), conversationBlock, true, TypeOfMatch.EXACT.name(), 1d, signalValue.getId());
-						return new SimilalrityObject(signalType.getKey(), conversationBlock, true, TypeOfMatch.EXACT.name(), 1d, signalType.getId(),signalType.getKey(), signalValue.getValue(),signalType.getColor());
+						return new SimilalrityObject(orgSignal.getName(), conversationBlock, true, TypeOfMatch.EXACT.name(), 1d, orgSignal.getId(),orgSignal.getName(), orgSignalValue.getValue(),orgSignal.getColor());
 					}
 				}
 

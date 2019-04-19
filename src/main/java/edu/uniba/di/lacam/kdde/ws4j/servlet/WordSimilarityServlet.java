@@ -76,7 +76,7 @@ public class WordSimilarityServlet extends HttpServlet {
 
 	public static RelatednessCalculator[] rcs;
 	private static IRAMDictionary dict = new MITWordNet().getDictionary();
-	private static File wiktionaryDirectory = new File("/home/anurag/var/TARGET_DIRECTORY");;
+	private static File wiktionaryDirectory = new File("/var/TARGET_DIRECTORY");;
 	public static IWiktionaryEdition wkt = JWKTL.openEdition(wiktionaryDirectory);
 	public static ArrayList<String> stopWords = new ArrayList<String>();
 	public static ArrayList<String> negativeWords = new ArrayList<String>();
@@ -91,7 +91,7 @@ public class WordSimilarityServlet extends HttpServlet {
 		rcs = new RelatednessCalculator[] { new WuPalmer(db) };
 
 		try {
-			tagger = new MaxentTagger(new FileInputStream(new File("/home/anurag/var/english-left3words-distsim.tagger")));
+			tagger = new MaxentTagger(new FileInputStream(new File("/var/english-left3words-distsim.tagger")));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -157,7 +157,7 @@ public class WordSimilarityServlet extends HttpServlet {
 			ArrayList<AnalysisSignal> signals = SignalHolder.products.get(productID).signals;
 			System.out.println("decode ..... "+decode);
 			
-			if(productID != null) {
+			/*if(productID != null) {
 			try {
 				MatchingEngine matchingEngine=new MatchingEngine();
 				similalrityObjects.add(matchingEngine.match(decode.toLowerCase().trim(),productID));
@@ -165,7 +165,7 @@ public class WordSimilarityServlet extends HttpServlet {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} 
-			}
+			}*/
 			
 			for (AnalysisSignal analysisSignal : signals) {
 				try {
@@ -349,7 +349,7 @@ public class WordSimilarityServlet extends HttpServlet {
 	private static ArrayList<String> getNegativeWords() {
 		// URL resource = Resources.getResource("negative_words.txt");
 		// String csvFile = resource.getFile(); // get file path
-		String csvFile = "/home/anurag/var/negative_words.txt";
+		String csvFile = "/var/negative_words.txt";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";
@@ -406,7 +406,7 @@ public class WordSimilarityServlet extends HttpServlet {
 
 	private static ArrayList<String> getStopWords() {
 		// TODO Auto-generated method stub
-		String csvFile = "/home/anurag/var/stop_word.txt";
+		String csvFile = "/var/stop_word.txt";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";

@@ -15,19 +15,19 @@ public class SignalMatchFactory {
 		return single_instance;
 	}
 
-	public static SignalMatch buildSignalMatch(TypeOfMatch type) {
+	public static SignalMatch buildSignalMatch(String type) {
 		SignalMatch signalMatch = null;
 		
 
-		switch (type) {
-		case SEMANTIC:
+		switch (type.toUpperCase().trim()) {
+		case "SEMANTIC":
 			return new SemanticSignal();
 
-		case EXACT:
+		case "EXACT":
 			return new ExactSignal();
 
 
-		case PATTERN_SET_EXACT:
+		case "PATTERN_SET_EXACT":
 			return new PatternSetSignal();
 
 

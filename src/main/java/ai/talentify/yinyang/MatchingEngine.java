@@ -25,41 +25,81 @@ import edu.uniba.di.lacam.kdde.ws4j.servlet.SimilalrityObject;
 public class MatchingEngine {
 	static String fileName = "signal-def.xml";
 
-	static HashMap<String, SignalConfigHolder> signalHolderMap = new HashMap<>();
-	static HashMap<String, OrgSignal> orgSignalHolderMap = new HashMap<>();
+	//static HashMap<String, SignalConfigHolder> signalHolderMap = new HashMap<>();
+	static HashMap<String, ArrayList<OrgSignal>> orgSignalHolderMap = new HashMap<>();
 	// read all signals def files
 	static {
-		
-		
-		String sql="SELECT * from org_generic_signal WHERE org_id=90";
-		
-		
-		ArrayList<HashMap<String, String>> sqlResult = DBUtils.getInstance().executeQuery(Thread.currentThread().getStackTrace(), sql);
+		String orgSql = "select distinct org_id from org_generic_signal";
+		ArrayList<HashMap<String, String>> orgSqlResult = DBUtils.getInstance()
+				.executeQuery(Thread.currentThread().getStackTrace(), orgSql);
+		for (HashMap<String, String> hashMap0 : orgSqlResult) {
 
-		 for (HashMap<String, String> hashMap : sqlResult) {
-			 String sqlGenericSignal="SELECT * from generic_signal WHERE id in (SELECT signal_id from generic_signal_value WHERE id in ("+hashMap.get("generic_signal_value_id")+"))";
-			 
-			 ArrayList<HashMap<String, String>> sqlGenericResult = DBUtils.getInstance().executeQuery(Thread.currentThread().getStackTrace(), sqlGenericSignal);
-			 
-			 for (HashMap<String, String> hashMap2 : sqlGenericResult) {
-				 
-				 String sqlGenericSignalVlaue="SELECT * from generic_signal_value WHERE signal_id in ("+hashMap2.get("id")+")";
-				 ArrayList<HashMap<String, String>> sqlGenericSignalVlaueResult = DBUtils.getInstance().executeQuery(Thread.currentThread().getStackTrace(), sqlGenericSignalVlaue);
-				 
-				 for (HashMap<String, String> hashMap3 : sqlResult) {
-					OrgSignalValue orgSignalValues=new OrgSignalValue(Integer.parseInt(hashMap3.get("id")), hashMap3.get("value"), hashMap3.get("type_of_match"), Float.parseFloat(hashMap3.get("threshold")));
+			String orgId = hashMap0.get("org_id");
+			ArrayList<OrgSignal> orgSignals = new ArrayList<>();
+			
+			
+			String sql = "SELECT * from org_generic_signal WHERE org_id=" + orgId;
+			ArrayList<HashMap<String, String>> sqlResult = DBUtils.getInstance()
+					.executeQuery(Thread.currentThread().getStackTrace(), sql);
+
+			for (HashMap<String, String> hashMap : sqlResult) {
+
+				String sqlGenericSignal = "SELECT * from generic_signal WHERE id in (SELECT signal_id from generic_signal_value WHERE id in ("
+						+ hashMap.get("generic_signal_value_id") + "))";
+
+				ArrayList<HashMap<String, String>> sqlGenericResult = DBUtils.getInstance()
+						.executeQuery(Thread.currentThread().getStackTrace(), sqlGenericSignal);
+
+				for (HashMap<String, String> hashMap2 : sqlGenericResult) {
+
+					String sqlGenericSignalVlaue = "SELECT * from generic_signal_value WHERE signal_id in ("
+							+ hashMap2.get("id") + ")";
+					ArrayList<HashMap<String, String>> sqlGenericSignalVlaueResult = DBUtils.getInstance()
+							.executeQuery(Thread.currentThread().getStackTrace(), sqlGenericSignalVlaue);
+					ArrayList<OrgSignalValue> orgSignalValues = new ArrayList<>();
+					for (HashMap<String, String> hashMap3 : sqlGenericSignalVlaueResult) {
+						OrgSignalValue orgSignalValue = new OrgSignalValue(Integer.parseInt(hashMap3.get("id")),
+								hashMap3.get("value"), hashMap3.get("type_of_match"),
+								Float.parseFloat(hashMap3.get("threshold")));
+						orgSignalValues.add(orgSignalValue);
+					}
+
+					OrgSignal signal = new OrgSignal(Integer.parseInt(hashMap2.get("id")), hashMap2.get("name"),
+							hashMap2.get("color"), orgSignalValues);
+					orgSignals.add(signal);
 				}
-				 
-				 OrgSignal signal=new OrgSignal(hashMap2.get("id"), hashMap2.get("name"), hashMap2.get("color"));
 			}
-			 
 			
-			 
-			 
-			 
+			String sqlMetadata="select * from org_metadata where id in (select meta_data_id from org_properties where org_id="+orgId+") ";
+			ArrayList<HashMap<String, String>> resOrgMetadata = DBUtils.getInstance()
+					.executeQuery(Thread.currentThread().getStackTrace(), sqlMetadata);
+			for (HashMap<String, String> hashMap4 : resOrgMetadata) {
+				
+				String signalOrgPropSql="select * from org_properties where org_id="+orgId+" and meta_data_id="+hashMap4.get("id");
+				ArrayList<HashMap<String, String>> resSignalOrgPropSql = DBUtils.getInstance()
+						.executeQuery(Thread.currentThread().getStackTrace(), signalOrgPropSql);
+				
+				ArrayList<OrgSignalValue> orgSignalValues = new ArrayList<>();
+				for (HashMap<String, String> hashMap5 : resSignalOrgPropSql) {
+					OrgSignalValue orgSignalValue = new OrgSignalValue(Integer.parseInt(hashMap5.get("id")),
+							hashMap5.get("value"), "EXACT",
+							0.85f);
+					orgSignalValues.add(orgSignalValue);
+				}
+				
+				
+				OrgSignal signal = new OrgSignal(Integer.parseInt(hashMap4.get("id")), hashMap4.get("key"),
+						hashMap4.get("color"), orgSignalValues);
+				orgSignals.add(signal);
+			}
 			
+			orgSignalHolderMap.put(orgId, orgSignals);
 		}
 		
+		
+		
+		
+
 		/*- InputStream stream = MatchingEngine.class.getResourceAsStream("/" + fileName);
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(SignalConfigHolder.class);
@@ -135,18 +175,20 @@ public class MatchingEngine {
 	public SimilalrityObject match(String text, Integer productId) throws JAXBException {
 
 		String sql = "select * from product where id=" + productId;
-		ArrayList<HashMap<String, String>> sqlResult = DBUtils.getInstance().executeQuery(Thread.currentThread().getStackTrace(), sql);
+		ArrayList<HashMap<String, String>> sqlResult = DBUtils.getInstance()
+				.executeQuery(Thread.currentThread().getStackTrace(), sql);
 
 		String orgId = sqlResult.get(0).get("organization_id");
 
 		try {
 
 			if (orgId != null) {
-				SignalConfigHolder signalHolderCollection1 = signalHolderMap.get(orgId);
-				for (SignalType signalHolder : signalHolderCollection1.signlaHolders) {
-					for (SignalValue signalType : signalHolder.getSignalvalue()) {
-						System.out.println("orgId  " + orgId + "   " + signalType.getValue());
-						SimilalrityObject so = SignalMatchFactory.buildSignalMatch(signalType.getType_of_match()).patternMatch(text, orgId);
+				ArrayList<OrgSignal> orgSignals = orgSignalHolderMap.get(orgId);
+				for (OrgSignal orgSignal : orgSignals) {
+					for (OrgSignalValue orgSignalValue : orgSignal.getSignalValues()) {
+						//System.out.println("orgId  " + orgId + "   " + orgSignalValue.getValue() + " text "+text);
+ 						SimilalrityObject so = SignalMatchFactory.buildSignalMatch(orgSignalValue.getTypeOfMatch())
+								.patternMatch(text, orgId);
 						if (so != null) {
 							// System.out.println(so.getScore() + " -- " + so.getTypeOfMatch() + " -- " +
 							// so.getSignal());
@@ -182,7 +224,7 @@ public class MatchingEngine {
 		System.err.println("Wow");
 		MatchingEngine matchingEngine = new MatchingEngine();
 		try {
-			matchingEngine.match("abcd", 448);
+			matchingEngine.match("hello", 448);
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -24,18 +24,18 @@ public class ReadWriteSignalConfig {
 
 	private static void writeSignals() {
 
-		SignalValue e = new SignalValue(1, "Hi", SignalMatchType.SEMANTIC.name());
+	/*	SignalValue e = new SignalValue(1, "Hi", SignalMatchType.SEMANTIC.name());
 		SignalValue e1 = new SignalValue(2, "Good morning", SignalMatchType.SEMANTIC.name());
-		SignalValue e2 = new SignalValue(3, "Thanks", SignalMatchType.SEMANTIC.name());
+		SignalValue e2 = new SignalValue(3, "Thanks", SignalMatchType.SEMANTIC.name());*/
 		SignalType SignalType1 = new SignalType();
 		SignalType1.setId(1);
 		SignalType1.setColor("#0101DF");
 		SignalType1.setKey("Greetings");
 		List<SignalValue> signalvalues = new ArrayList<SignalValue>();
 
-		signalvalues.add(e);
+		/*signalvalues.add(e);
 		signalvalues.add(e1);
-		signalvalues.add(e2);
+		signalvalues.add(e2);*/
 		SignalType1.setSignalvalue(signalvalues);
 
 		SignalConfigHolder customer = new SignalConfigHolder();
