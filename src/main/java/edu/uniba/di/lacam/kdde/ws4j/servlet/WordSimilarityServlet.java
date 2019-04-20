@@ -157,7 +157,7 @@ public class WordSimilarityServlet extends HttpServlet {
 			ArrayList<AnalysisSignal> signals = SignalHolder.products.get(productID).signals;
 			System.out.println("decode ..... "+decode);
 			
-			/*if(productID != null) {
+			if(productID != null) {
 			try {
 				MatchingEngine matchingEngine=new MatchingEngine();
 				similalrityObjects.add(matchingEngine.match(decode.toLowerCase().trim(),productID));
@@ -165,7 +165,7 @@ public class WordSimilarityServlet extends HttpServlet {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} 
-			}*/
+			}
 			
 			for (AnalysisSignal analysisSignal : signals) {
 				try {

@@ -38,36 +38,36 @@ public class MatchingEngine {
 			ArrayList<OrgSignal> orgSignals = new ArrayList<>();
 			
 			
-			String sql = "SELECT * from org_generic_signal WHERE org_id=" + orgId;
+			String sql = "SELECT * from generic_signal WHERE id in (SELECT distinct signal_id from generic_signal_value WHERE id in (SELECT generic_signal_value_id from org_generic_signal WHERE org_id="+orgId+"))";
 			ArrayList<HashMap<String, String>> sqlResult = DBUtils.getInstance()
 					.executeQuery(Thread.currentThread().getStackTrace(), sql);
 
 			for (HashMap<String, String> hashMap : sqlResult) {
 
-				String sqlGenericSignal = "SELECT * from generic_signal WHERE id in (SELECT signal_id from generic_signal_value WHERE id in ("
-						+ hashMap.get("generic_signal_value_id") + "))";
+				  
 
-				ArrayList<HashMap<String, String>> sqlGenericResult = DBUtils.getInstance()
-						.executeQuery(Thread.currentThread().getStackTrace(), sqlGenericSignal);
-
-				for (HashMap<String, String> hashMap2 : sqlGenericResult) {
-
-					String sqlGenericSignalVlaue = "SELECT * from generic_signal_value WHERE signal_id in ("
-							+ hashMap2.get("id") + ")";
+				 
+					ArrayList<OrgSignalValue> orgSignalValues = new ArrayList<>();
+					 String sqlGenericSignalVlaue = "SELECT * from generic_signal_value WHERE signal_id in ("
+							+ hashMap.get("id") + ")";
+					
 					ArrayList<HashMap<String, String>> sqlGenericSignalVlaueResult = DBUtils.getInstance()
 							.executeQuery(Thread.currentThread().getStackTrace(), sqlGenericSignalVlaue);
-					ArrayList<OrgSignalValue> orgSignalValues = new ArrayList<>();
+					
+					
+					
+					
 					for (HashMap<String, String> hashMap3 : sqlGenericSignalVlaueResult) {
 						OrgSignalValue orgSignalValue = new OrgSignalValue(Integer.parseInt(hashMap3.get("id")),
 								hashMap3.get("value"), hashMap3.get("type_of_match"),
 								Float.parseFloat(hashMap3.get("threshold")));
 						orgSignalValues.add(orgSignalValue);
-					}
+					} 
 
-					OrgSignal signal = new OrgSignal(Integer.parseInt(hashMap2.get("id")), hashMap2.get("name"),
-							hashMap2.get("color"), orgSignalValues);
+					OrgSignal signal = new OrgSignal(Integer.parseInt(hashMap.get("id")), hashMap.get("name"),
+							hashMap.get("color"), orgSignalValues);
 					orgSignals.add(signal);
-				}
+				 
 			}
 			
 			String sqlMetadata="select * from org_metadata where id in (select meta_data_id from org_properties where org_id="+orgId+") ";
@@ -86,9 +86,14 @@ public class MatchingEngine {
 							0.85f);
 					orgSignalValues.add(orgSignalValue);
 				}
-				
-				
-				OrgSignal signal = new OrgSignal(Integer.parseInt(hashMap4.get("id")), hashMap4.get("key"),
+
+				String str[] ="BRAND_NAME".toLowerCase().split("_");
+				String key="";
+				for (String s : str) {
+					key=key+" "+s;
+				}
+				key=key.substring(0,2).toUpperCase()+key.substring(2);
+ 				OrgSignal signal = new OrgSignal(Integer.parseInt(hashMap4.get("id")),key ,
 						hashMap4.get("color"), orgSignalValues);
 				orgSignals.add(signal);
 			}
@@ -184,8 +189,11 @@ public class MatchingEngine {
 
 			if (orgId != null) {
 				ArrayList<OrgSignal> orgSignals = orgSignalHolderMap.get(orgId);
+				//System.out.println("orgID "+orgId);
+				//System.out.println(new Gson().toJson(orgSignals));
 				for (OrgSignal orgSignal : orgSignals) {
 					for (OrgSignalValue orgSignalValue : orgSignal.getSignalValues()) {
+						//System.out.println("orgSignalValue.getTypeOfMatch() "+orgSignalValue.getTypeOfMatch());
 						//System.out.println("orgId  " + orgId + "   " + orgSignalValue.getValue() + " text "+text);
  						SimilalrityObject so = SignalMatchFactory.buildSignalMatch(orgSignalValue.getTypeOfMatch())
 								.patternMatch(text, orgId);
