@@ -62,7 +62,7 @@ import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 public class WordSimilarityServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	public static MaxentTagger tagger = null;
-	public static ExecutorService executorService = Executors.newFixedThreadPool(400);
+	public static ExecutorService executorService = Executors.newFixedThreadPool(20);
 
 	/**
 	 * @see HttpServlet#HttpServlet()

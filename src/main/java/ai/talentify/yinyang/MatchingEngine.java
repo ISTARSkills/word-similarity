@@ -189,8 +189,7 @@ public class MatchingEngine {
 
 			if (orgId != null) {
 				ArrayList<OrgSignal> orgSignals = orgSignalHolderMap.get(orgId);
-				//System.out.println("orgID "+orgId);
-				//System.out.println(new Gson().toJson(orgSignals));
+				if(orgSignals != null && orgSignalHolderMap != null ) {
 				for (OrgSignal orgSignal : orgSignals) {
 					for (OrgSignalValue orgSignalValue : orgSignal.getSignalValues()) {
 						//System.out.println("orgSignalValue.getTypeOfMatch() "+orgSignalValue.getTypeOfMatch());
@@ -203,6 +202,7 @@ public class MatchingEngine {
 							return so;
 						}
 					}
+				}
 				}
 
 			}

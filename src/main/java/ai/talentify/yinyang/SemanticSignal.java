@@ -41,7 +41,7 @@ public class SemanticSignal extends SignalMatch {
 
 	private static double sentanceSimilarity(String sentance1, String sentance2) {
 
-		OkHttpClient client = new OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS).writeTimeout(10, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build();
+		OkHttpClient client = new OkHttpClient.Builder().connectTimeout(3000, TimeUnit.SECONDS).writeTimeout(3000, TimeUnit.SECONDS).readTimeout(3000, TimeUnit.SECONDS).build();
 
 		MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
 		RequestBody body = RequestBody.create(mediaType, "sentence1=" + sentance1 + "&sentence2=" + sentance2);
