@@ -27,6 +27,7 @@ public class MatchingEngine {
 
 	//static HashMap<String, SignalConfigHolder> signalHolderMap = new HashMap<>();
 	static HashMap<String, ArrayList<OrgSignal>> orgSignalHolderMap = new HashMap<>();
+	static HashMap<String , String> productOrg=new HashMap<>();
 	// read all signals def files
 	static {
 		String orgSql = "select distinct org_id from org_generic_signal";
@@ -101,6 +102,15 @@ public class MatchingEngine {
 			orgSignalHolderMap.put(orgId, orgSignals);
 		}
 		
+		String sql = "select * from product";
+		ArrayList<HashMap<String, String>> sqlResult = DBUtils.getInstance()
+				.executeQuery(Thread.currentThread().getStackTrace(), sql);
+		
+		for (HashMap<String, String> hashMap2 : sqlResult) {
+			String orgId = hashMap2.get("organization_id");
+			productOrg.put(hashMap2.get("id"), orgId);
+		}
+
 		
 		
 		
@@ -179,11 +189,7 @@ public class MatchingEngine {
 
 	public SimilalrityObject match(String text, Integer productId) throws JAXBException {
 
-		String sql = "select * from product where id=" + productId;
-		ArrayList<HashMap<String, String>> sqlResult = DBUtils.getInstance()
-				.executeQuery(Thread.currentThread().getStackTrace(), sql);
-
-		String orgId = sqlResult.get(0).get("organization_id");
+		String orgId=productOrg.get(productId+"");
 
 		try {
 
